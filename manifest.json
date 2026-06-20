@@ -1,0 +1,13 @@
+{
+  "name": "Korea Passport",
+  "short_name": "Korea Passport",
+  "description": "Collect badges as you explore Korea",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

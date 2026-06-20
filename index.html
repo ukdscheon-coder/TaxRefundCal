@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Korea Passport" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <title>Korea Passport</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- TAB: PASSPORT -->
+    <div id="tab-passport" class="tab-content active">
+      <div class="safe-top"></div>
+      <div class="scroll-area">
+        <div class="passport-card">
+          <p class="eyebrow">🇰🇷 KOREA PASSPORT</p>
+          <h1>Collect Real Korea</h1>
+          <p class="sub">Visit places, unlock badges, share your journey.</p>
+        </div>
+
+        <div class="progress-box">
+          <div class="progress-row">
+            <span class="label">Overall Progress</span>
+            <strong id="overallText">0 / 12</strong>
+          </div>
+          <div class="bar"><div id="overallBar"></div></div>
+        </div>
+
+        <div class="city-progress" id="cityProgress"></div>
+
+        <div class="action-row">
+          <button id="gpsBtn" class="btn-primary">📍 Check Location</button>
+          <button id="shareBtn" class="btn-secondary">📤 Share</button>
+        </div>
+
+        <p class="gps-note">GPS works only on HTTPS. Tap any badge to collect in demo mode.</p>
+      </div>
+    </div>
+
+    <!-- TAB: BADGES -->
+    <div id="tab-badges" class="tab-content">
+      <div class="safe-top"></div>
+      <div class="scroll-area">
+        <h2 class="section-title">All Badges</h2>
+        <div class="filter-row" id="filterRow"></div>
+        <div id="badgeGrid" class="badge-grid"></div>
+      </div>
+    </div>
+
+    <!-- TAB: STATS -->
+    <div id="tab-stats" class="tab-content">
+      <div class="safe-top"></div>
+      <div class="scroll-area">
+        <h2 class="section-title">My Stats</h2>
+        <div id="statsPanel"></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav id="bottomNav">
+      <button data-tab="passport" class="nav-btn active">
+        <span>🗺️</span><span>Passport</span>
+      </button>
+      <button data-tab="badges" class="nav-btn">
+        <span>🏅</span><span>Badges</span>
+      </button>
+      <button data-tab="stats" class="nav-btn">
+        <span>📊</span><span>Stats</span>
+      </button>
+    </nav>
+
+    <!-- UNLOCK TOAST -->
+    <div id="toast" class="toast hidden">
+      <span id="toastEmoji"></span>
+      <div>
+        <strong id="toastTitle"></strong>
+        <p id="toastSub"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
