@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🧱 LEGO 브릭 어드벤처!</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Arial Rounded MT Bold',Arial,sans-serif;
+  background:#16213e;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;overflow:hidden;user-select:none;
+  touch-action:manipulation;
+}
+#gc{
+  width:100%;max-width:480px;height:100vh;max-height:900px;
+  position:relative;overflow:hidden;
+}
+
+/* ── SCREENS ── */
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .35s,transform .35s;
+}
+.screen.off{opacity:0;pointer-events:none;transform:scale(.96);}
+
+/* ── TITLE ── */
+#ts{background:linear-gradient(160deg,#FF6B00 0%,#E3000B 55%,#9B4DCA 100%);}
+.t-logo{font-size:80px;animation:bob .9s ease-in-out infinite alternate;}
+@keyframes bob{from{transform:translateY(0);}to{transform:translateY(-18px);}}
+.t-title{font-size:38px;font-weight:900;color:#fff;text-shadow:4px 4px 0 rgba(0,0,0,.3);line-height:1.1;text-align:center;}
+.t-sub{font-size:17px;color:rgba(255,255,255,.88);margin:10px 0 36px;text-align:center;}
+.t-levels{font-size:13px;color:rgba(255,255,255,.6);margin-top:14px;}
+
+/* ── GAME ── */
+#gs{background:#f5e0c0;flex-direction:column;justify-content:flex-start;}
+
+#hdr{
+  width:100%;background:linear-gradient(90deg,#FF6B00,#E3000B);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.25);flex-shrink:0;
+}
+#lvl-txt{font-size:19px;font-weight:900;color:#fff;white-space:nowrap;}
+#lvl-bar{flex:1;height:14px;background:rgba(255,255,255,.3);border-radius:7px;overflow:hidden;}
+#lvl-fill{height:100%;background:#fff;border-radius:7px;transition:width .6s ease;}
+#lvl-ico{font-size:28px;}
+
+#tp{
+  width:100%;padding:10px 14px 12px;background:#fff;
+  box-shadow:0 3px 10px rgba(0,0,0,.12);flex-shrink:0;
+}
+#lvl-name{font-size:21px;font-weight:900;color:#333;text-align:center;margin-bottom:10px;}
+#req-panel{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.req-item{
+  display:flex;flex-direction:column;align-items:center;
+  background:#f2f2f2;border-radius:12px;padding:7px 10px;min-width:58px;
+  border:3px solid transparent;transition:all .3s;
+}
+.req-item.done{background:#d4f5e2;border-color:#28a745;}
+.rb{
+  width:44px;height:30px;border-radius:5px;position:relative;
+  margin-bottom:4px;
+}
+.rb-stud{
+  position:absolute;top:-7px;width:14px;height:8px;
+  border-radius:50%;opacity:.9;
+}
+.rc{font-size:13px;font-weight:900;color:#444;}
+.rc.ok{color:#28a745;}
+
+/* ── BRICK FIELD ── */
+#bf{
+  flex:1;width:100%;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#c9a96e 0%,#a07848 100%);
+  border-top:4px solid #8B6340;
+}
+#bf::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(88deg,transparent 0,transparent 55px,rgba(0,0,0,.04) 55px,rgba(0,0,0,.04) 57px);
+  pointer-events:none;
+}
+
+/* ── BRICKS ── */
+.brick{position:absolute;cursor:pointer;}
+.brick-body{
+  border-radius:5px;position:relative;
+  box-shadow:0 5px 0 var(--dark),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.stud{
+  position:absolute;top:-7px;border-radius:50%;
+  box-shadow:0 -2px 0 var(--dark);
+}
+@keyframes popOut{
+  0%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.5);opacity:.8;}
+  100%{transform:scale(0);opacity:0;}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0) rotate(var(--r));}
+  25%{transform:translateX(-9px) rotate(var(--r));}
+  75%{transform:translateX(9px) rotate(var(--r));}
+}
+.brick.popping{animation:popOut .32s ease forwards;pointer-events:none;}
+.brick.shaking{animation:shake .38s ease;}
+
+/* ── BUILD BUTTON ── */
+#build-btn{
+  position:absolute;bottom:18px;left:50%;
+  transform:translateX(-50%) scale(0);
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  color:#fff;font-size:23px;font-weight:900;
+  border:none;border-radius:50px;padding:15px 38px;
+  cursor:pointer;
+  box-shadow:0 6px 0 rgba(0,0,0,.28),0 8px 22px rgba(255,140,0,.45);
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1);
+  z-index:20;white-space:nowrap;
+}
+#build-btn.show{transform:translateX(-50%) scale(1);}
+#build-btn:active{transform:translateX(-50%) scale(.95) !important;box-shadow:0 3px 0 rgba(0,0,0,.28);}
+
+/* ── PARTICLES ── */
+.pt{
+  position:fixed;pointer-events:none;font-size:20px;z-index:100;
+  animation:ptFly 1s ease forwards;
+}
+@keyframes ptFly{
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+}
+
+/* ── LEVEL COMPLETE ── */
+#lcs{background:linear-gradient(145deg,#667eea 0%,#764ba2 100%);z-index:20;}
+.lc-ico{font-size:82px;animation:pop .5s ease;margin-bottom:12px;}
+@keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
+.lc-t{font-size:40px;font-weight:900;color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,.2);}
+.lc-s{font-size:19px;color:rgba(255,255,255,.88);margin:8px 0 22px;text-align:center;padding:0 20px;}
+.stars{font-size:50px;letter-spacing:8px;margin-bottom:28px;}
+
+/* ── GAME COMPLETE ── */
+#gcs{background:linear-gradient(145deg,#f093fb 0%,#f5576c 100%);z-index:30;}
+
+/* ── BUTTONS ── */
+.btn{
+  background:#fff;color:#333;font-size:19px;font-weight:900;
+  border:none;border-radius:50px;padding:13px 36px;
+  cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.13);
+  transition:transform .1s,box-shadow .1s;margin:5px;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.13);}
+.btn-p{
+  background:linear-gradient(135deg,#FFD700,#FF6B00);
+  color:#fff;font-size:24px;padding:17px 48px;
+  box-shadow:0 5px 0 rgba(0,0,0,.2);
+}
+
+/* ── CONFETTI ── */
+.cf{
+  position:fixed;top:-24px;pointer-events:none;z-index:50;
+  animation:cfFall linear forwards;border-radius:2px;
+}
+@keyframes cfFall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+/* ── HINT BADGE ── */
+#hint{
+  position:absolute;top:8px;right:10px;
+  background:rgba(0,0,0,.45);color:#fff;
+  font-size:12px;padding:4px 10px;border-radius:20px;
+  z-index:10;pointer-events:none;opacity:0;transition:opacity .3s;
+}
+#hint.show{opacity:1;}
+
+/* ── LEVEL MAP BUTTON ── */
+#map-btn{
+  position:absolute;bottom:18px;right:14px;
+  background:rgba(0,0,0,.3);color:#fff;
+  border:none;border-radius:50%;width:44px;height:44px;
+  font-size:22px;cursor:pointer;z-index:5;
+}
+</style>
+</head>
+<body>
+<div id="gc">
+
+  <!-- TITLE -->
+  <div id="ts" class="screen">
+    <div class="t-logo">🧱</div>
+    <div class="t-title">LEGO 브릭<br>어드벤처!</div>
+    <div class="t-sub" id="t-sub-txt">벽돌을 모아서 뚝딱 만들어봐요!</div>
+    <button class="btn btn-p" onclick="startGame()">🎮 시작하기!</button>
+    <div class="t-levels">총 50레벨 도전!</div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gs" class="screen off">
+    <div id="hdr">
+      <div id="lvl-txt">레벨 1</div>
+      <div id="lvl-bar"><div id="lvl-fill" style="width:2%"></div></div>
+      <div id="lvl-ico">🧱</div>
+    </div>
+    <div id="tp">
+      <div id="lvl-name">빨간 탑 🏠</div>
+      <div id="req-panel"></div>
+    </div>
+    <div id="bf">
+      <div id="hint">이미 다 모았어요!</div>
+      <button id="build-btn" onclick="triggerBuild()">🏗️ 건설하기!</button>
+    </div>
+  </div>
+
+  <!-- LEVEL COMPLETE -->
+  <div id="lcs" class="screen off">
+    <div class="lc-ico" id="lc-ico">🎉</div>
+    <div class="lc-t">완성!</div>
+    <div class="lc-s" id="lc-sub">레벨 1 클리어!</div>
+    <div class="stars" id="lc-stars">⭐⭐⭐</div>
+    <button class="btn btn-p" id="next-btn" onclick="nextLevel()">다음 레벨 ▶</button>
+    <button class="btn" onclick="goTitle()" style="font-size:16px;padding:11px 26px;">처음으로</button>
+  </div>
+
+  <!-- GAME COMPLETE -->
+  <div id="gcs" class="screen off">
+    <div style="font-size:80px;margin-bottom:14px;">👑</div>
+    <div class="lc-t" style="font-size:30px;">축하해요!</div>
+    <div class="lc-t" style="font-size:24px;margin-bottom:14px;">모든 레벨 완성!</div>
+    <div style="font-size:52px;margin-bottom:22px;">🏆🎊🌟</div>
+    <div style="color:rgba(255,255,255,.9);font-size:18px;margin-bottom:30px;text-align:center;padding:0 20px;">레벨 50개를 모두 클리어했어요!<br>정말 대단해요!</div>
+    <button class="btn btn-p" onclick="restartAll()">🔄 다시 도전!</button>
+  </div>
+
+</div>
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+const C={
+  R:{h:'#E3000B',d:'#A50008',n:'빨강'},
+  Y:{h:'#FFD700',d:'#C4A200',n:'노랑'},
+  B:{h:'#006DB7',d:'#004F87',n:'파랑'},
+  G:{h:'#00A650',d:'#007A3A',n:'초록'},
+  O:{h:'#FF8C00',d:'#C46A00',n:'주황'},
+  W:{h:'#F0F0F0',d:'#C0C0C0',n:'하양'},
+  K:{h:'#3A3A3A',d:'#1A1A1A',n:'검정'},
+  P:{h:'#FF69B4',d:'#CC4490',n:'분홍'},
+  V:{h:'#00C4D4',d:'#008C9E',n:'하늘'},
+  M:{h:'#9B4DCA',d:'#6B3490',n:'보라'},
+  T:{h:'#C8960C',d:'#9A7009',n:'갈색'},
+};
+
+const LV=[
+  // 1-5 매우쉬움
+  {n:"빨간 탑 🏠",e:"🟥",r:{R:4},t:9},
+  {n:"노란 길 🌟",e:"🟡",r:{Y:4},t:9},
+  {n:"파란 바다 🌊",e:"🔵",r:{B:4},t:9},
+  {n:"초록 풀밭 🌿",e:"🟩",r:{G:4},t:9},
+  {n:"알록달록 벽 🌈",e:"🌈",r:{R:2,Y:2},t:11},
+  // 6-10 쉬움
+  {n:"작은 집 🏠",e:"🏠",r:{R:3,Y:3},t:13},
+  {n:"귀여운 성 🏰",e:"🏰",r:{B:3,W:3},t:13},
+  {n:"커다란 나무 🌳",e:"🌳",r:{G:4,T:2},t:13},
+  {n:"예쁜 꽃 🌸",e:"🌸",r:{P:4,G:2},t:13},
+  {n:"빨간 자동차 🚗",e:"🚗",r:{R:4,K:2},t:15},
+  // 11-15 보통
+  {n:"친절한 로봇 🤖",e:"🤖",r:{B:4,G:2,W:2},t:17},
+  {n:"칙칙폭폭 기차 🚂",e:"🚂",r:{R:3,K:3,Y:2},t:17},
+  {n:"돛단배 ⛵",e:"⛵",r:{B:4,W:3,R:2},t:17},
+  {n:"하늘 비행기 ✈️",e:"✈️",r:{W:4,B:3,G:2},t:19},
+  {n:"반짝 별 ⭐",e:"⭐",r:{Y:5,O:3},t:19},
+  // 16-20
+  {n:"사랑 하트 ❤️",e:"❤️",r:{R:6,P:2},t:19},
+  {n:"우리 집 🏡",e:"🏡",r:{R:4,Y:3,B:2,G:2},t:22},
+  {n:"야옹 고양이 🐱",e:"🐱",r:{O:5,W:3,K:2},t:22},
+  {n:"멍멍 강아지 🐶",e:"🐶",r:{T:5,W:3,K:2},t:22},
+  {n:"생일 케이크 🎂",e:"🎂",r:{P:4,Y:3,W:3},t:24},
+  // 21-25 중간
+  {n:"웅장한 성 🏰",e:"🏰",r:{B:5,W:4,K:3,G:2},t:26},
+  {n:"브라키오사우루스 🦕",e:"🦕",r:{G:6,Y:4,W:2,K:2},t:26},
+  {n:"우주 로켓 🚀",e:"🚀",r:{R:5,B:4,W:3,Y:3},t:28},
+  {n:"신비한 용 🐲",e:"🐲",r:{G:5,R:4,Y:4,K:2},t:28},
+  {n:"맛있는 피자 🍕",e:"🍕",r:{Y:5,R:4,G:3,W:3},t:30},
+  // 26-30
+  {n:"무지개 다리 🌈",e:"🌈",r:{R:3,O:3,Y:3,G:3,B:3},t:30},
+  {n:"뒤뚱 펭귄 🐧",e:"🐧",r:{K:5,W:4,O:3,B:2},t:30},
+  {n:"빨간 트럭 🚛",e:"🚛",r:{R:5,K:4,B:3,W:3},t:32},
+  {n:"닌자 성 ⛩️",e:"⛩️",r:{R:5,K:5,W:4,G:2},t:32},
+  {n:"비행 우주선 🛸",e:"🛸",r:{B:5,V:4,W:3,K:4},t:34},
+  // 31-35 어려움
+  {n:"공룡 섬 🏝️",e:"🏝️",r:{G:6,Y:5,B:4,R:3,K:2},t:36},
+  {n:"마법사 탑 🧙",e:"🧙",r:{M:5,B:4,W:4,Y:3,K:3},t:36},
+  {n:"인어공주 🧜",e:"🧜",r:{V:5,P:4,Y:4,G:3,B:3},t:38},
+  {n:"바이킹 배 ⚓",e:"⚓",r:{T:5,R:4,B:4,W:4,K:4},t:38},
+  {n:"미래 도시 🏙️",e:"🏙️",r:{B:5,V:5,W:4,K:4,G:3},t:40},
+  // 36-40
+  {n:"신비한 정글 🌿",e:"🌿",r:{G:6,Y:4,R:4,T:4,O:3},t:40},
+  {n:"심해 왕국 🌊",e:"🌊",r:{B:6,V:5,G:4,P:3,W:3},t:42},
+  {n:"불꽃 화산 🌋",e:"🌋",r:{R:6,O:5,K:5,G:4,Y:3},t:42},
+  {n:"얼음 요새 ❄️",e:"❄️",r:{W:6,V:5,B:5,K:3,G:3},t:44},
+  {n:"황금 신전 🏛️",e:"🏛️",r:{Y:7,O:5,T:4,W:4,R:3},t:44},
+  // 41-45 매우어려움
+  {n:"마법 왕국 🏰",e:"🏰",r:{M:6,B:5,G:5,Y:4,W:4,R:3},t:46},
+  {n:"사이버 로봇 🤖",e:"🤖",r:{V:6,B:5,K:5,W:4,G:4,R:3},t:48},
+  {n:"레인보우 타워 🌈",e:"🌈",r:{R:4,O:4,Y:4,G:4,B:4,M:4},t:48},
+  {n:"우주 정거장 🛰️",e:"🛰️",r:{B:6,W:6,K:5,V:4,R:4,Y:3},t:50},
+  {n:"드래곤 성 🐉",e:"🐉",r:{R:6,G:5,Y:5,K:5,O:4,B:3},t:50},
+  // 46-50 최고난이도
+  {n:"마법의 숲 🌲",e:"🌲",r:{G:7,Y:5,T:5,R:4,W:3,O:4},t:52},
+  {n:"해적선 🏴‍☠️",e:"🏴‍☠️",r:{T:7,R:5,K:5,W:5,B:4,Y:4},t:52},
+  {n:"닌자 요새 🥷",e:"🥷",r:{K:7,R:6,W:5,B:4,G:4,Y:4},t:54},
+  {n:"외계인 기지 👽",e:"👽",r:{G:7,V:6,M:5,W:5,B:4,Y:4},t:54},
+  {n:"최후의 성 👑",e:"👑",r:{Y:7,R:6,B:6,G:5,W:5,K:5,M:4},t:56},
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let lvIdx=0,collected={},required={};
+let audioCtx=null;
+
+// ══════════════════════════════════════════════
+//  SCREENS
+// ══════════════════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('off'));
+  document.getElementById(id).classList.remove('off');
+}
+function goTitle(){show('ts');}
+
+// ══════════════════════════════════════════════
+//  AUDIO (Web Audio API)
+// ══════════════════════════════════════════════
+function ac(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function beep(freq,dur,type='sine',vol=.18){
+  try{
+    const ctx=ac(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.connect(g);g.connect(ctx.destination);
+    o.frequency.setValueAtTime(freq,ctx.currentTime);
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function sndCollect(){beep(700+Math.random()*300,.14,'sine',.2);setTimeout(()=>beep(1000+Math.random()*200,.1,'sine',.15),60);}
+function sndWrong(){beep(180,.2,'sawtooth',.15);}
+function sndReady(){
+  [523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'sine',.25),i*120));
+}
+function sndComplete(){
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.3,'sine',.28),i*140));
+}
+
+// ══════════════════════════════════════════════
+//  GAME START / LEVEL LOAD
+// ══════════════════════════════════════════════
+function startGame(){
+  const saved=+localStorage.getItem('legoLvl')||0;
+  lvIdx=Math.min(saved,LV.length-1);
+  loadLevel();
+  show('gs');
+  const sub=document.getElementById('t-sub-txt');
+  if(saved>0) sub.textContent=`저장된 진행: 레벨 ${saved+1}부터!`;
+}
+
+function loadLevel(){
+  const lv=LV[lvIdx];
+  required={...lv.r};
+  collected={};
+  Object.keys(required).forEach(c=>collected[c]=0);
+
+  document.getElementById('lvl-txt').textContent=`레벨 ${lvIdx+1}`;
+  document.getElementById('lvl-ico').textContent=lv.e;
+  document.getElementById('lvl-fill').style.width=`${((lvIdx+1)/50)*100}%`;
+  document.getElementById('lvl-name').textContent=lv.n;
+
+  renderReqPanel();
+  hideBuildBtn();
+
+  const bf=document.getElementById('bf');
+  bf.querySelectorAll('.brick').forEach(b=>b.remove());
+
+  requestAnimationFrame(()=>generateBricks(lv));
+}
+
+// ══════════════════════════════════════════════
+//  REQUIRED PANEL
+// ══════════════════════════════════════════════
+function renderReqPanel(){
+  const panel=document.getElementById('req-panel');
+  panel.innerHTML='';
+  Object.entries(required).forEach(([c,cnt])=>{
+    const got=collected[c]||0;
+    const done=got>=cnt;
+    const col=C[c];
+    const el=document.createElement('div');
+    el.className=`req-item${done?' done':''}`;
+    el.id=`ri-${c}`;
+    el.innerHTML=`
+      <div class="rb" style="background:${col.h};box-shadow:0 4px 0 ${col.d};">
+        <div class="rb-stud" style="background:${col.h};box-shadow:0 -2px 0 ${col.d};left:4px;"></div>
+        <div class="rb-stud" style="background:${col.h};box-shadow:0 -2px 0 ${col.d};left:24px;"></div>
+      </div>
+      <div class="rc${done?' ok':''}" id="rc-${c}">${got}/${cnt}</div>
+    `;
+    panel.appendChild(el);
+  });
+}
+
+function updateReqItem(c){
+  const cnt=required[c];
+  const got=collected[c]||0;
+  const done=got>=cnt;
+  const el=document.getElementById(`ri-${c}`);
+  if(el){
+    el.className=`req-item${done?' done':''}`;
+    const rc=document.getElementById(`rc-${c}`);
+    if(rc){rc.textContent=`${got}/${cnt}`;rc.className=`rc${done?' ok':''}`;}
+  }
+}
+
+// ══════════════════════════════════════════════
+//  BRICK GENERATION
+// ══════════════════════════════════════════════
+function rnd(a,b){return a+Math.random()*(b-a);}
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function generateBricks(lv){
+  const bf=document.getElementById('bf');
+  const W=bf.clientWidth||360;
+  const H=bf.clientHeight||400;
+
+  // Build pool: required bricks + distractors
+  let pool=[];
+  Object.entries(lv.r).forEach(([c,n])=>{for(let i=0;i<n;i++)pool.push(c);});
+
+  const extra=lv.t-pool.length;
+  const reqKeys=Object.keys(lv.r);
+  const distColors=Object.keys(C).filter(c=>!reqKeys.includes(c));
+  for(let i=0;i<extra;i++){
+    pool.push(distColors[0|Math.random()*distColors.length]);
+  }
+  pool=shuffle(pool);
+
+  const BW=54,BH=44;
+  const placed=[];
+
+  pool.forEach((c,idx)=>{
+    let x,y,tries=0;
+    do{
+      x=rnd(8,W-BW-8);
+      y=rnd(16,H-BH-80);
+      tries++;
+    }while(tries<40&&placed.some(p=>Math.abs(p.x-x)<BW*.7&&Math.abs(p.y-y)<BH*.7));
+    placed.push({x,y});
+
+    const rot=rnd(-22,22);
+    const col=C[c];
+
+    const brick=document.createElement('div');
+    brick.className='brick';
+    brick.dataset.c=c;
+    brick.style.cssText=`left:${x}px;top:${y}px;--r:${rot}deg;transform:rotate(${rot}deg) scale(0);z-index:${1+(0|Math.random()*4)};transition:transform .4s cubic-bezier(.34,1.56,.64,1) ${idx*35}ms,opacity .3s ${idx*35}ms;opacity:0;`;
+    brick.innerHTML=`
+      <div class="brick-body" style="width:${BW}px;height:30px;background:${col.h};--dark:${col.d};">
+        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:7px;"></div>
+        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:27px;"></div>
+        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:${BW-21}px;"></div>
+      </div>
+    `;
+
+    const tap=()=>collectBrick(brick);
+    brick.addEventListener('pointerdown',tap);
+
+    bf.appendChild(brick);
+    requestAnimationFrame(()=>{
+      brick.style.transform=`rotate(${rot}deg) scale(1)`;
+      brick.style.opacity='1';
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+//  COLLECT LOGIC
+// ══════════════════════════════════════════════
+function collectBrick(brick){
+  if(brick.classList.contains('popping')||brick.classList.contains('shaking'))return;
+
+  const c=brick.dataset.c;
+  const isReq=required.hasOwnProperty(c);
+  const stillNeed=isReq&&(collected[c]||0)<required[c];
+
+  if(stillNeed){
+    collected[c]=(collected[c]||0)+1;
+    sndCollect();
+    spawnParticles(brick,c);
+    brick.classList.add('popping');
+    setTimeout(()=>brick.remove(),340);
+    updateReqItem(c);
+    checkDone();
+  } else {
+    // Wrong/extra — shake but still disappear after delay (fun for kids)
+    sndWrong();
+    brick.classList.add('shaking');
+    setTimeout(()=>{
+      brick.classList.remove('shaking');
+      brick.style.transition='opacity .4s';
+      brick.style.opacity='.3';
+    },380);
+    // Show hint if required color already done
+    if(isReq){
+      const hint=document.getElementById('hint');
+      hint.classList.add('show');
+      setTimeout(()=>hint.classList.remove('show'),1400);
+    }
+  }
+}
+
+function checkDone(){
+  const all=Object.keys(required).every(c=>(collected[c]||0)>=required[c]);
+  if(all){
+    showBuildBtn();
+    sndReady();
+  }
+}
+
+// ══════════════════════════════════════════════
+//  BUILD BUTTON
+// ══════════════════════════════════════════════
+function showBuildBtn(){document.getElementById('build-btn').classList.add('show');}
+function hideBuildBtn(){document.getElementById('build-btn').classList.remove('show');}
+
+function triggerBuild(){
+  hideBuildBtn();
+  // Scatter remaining bricks off-screen
+  document.getElementById('bf').querySelectorAll('.brick').forEach((b,i)=>{
+    const dx=(Math.random()-.5)*500;
+    const dy=-300-Math.random()*300;
+    setTimeout(()=>{
+      b.style.transition='transform .5s ease,opacity .5s';
+      b.style.transform=`translate(${dx}px,${dy}px) rotate(${(Math.random()-.5)*360}deg) scale(0)`;
+      b.style.opacity='0';
+    },i*25);
+  });
+  setTimeout(showLevelComplete,700);
+}
+
+// ══════════════════════════════════════════════
+//  LEVEL COMPLETE
+// ══════════════════════════════════════════════
+function showLevelComplete(){
+  const lv=LV[lvIdx];
+  document.getElementById('lc-ico').textContent=lv.e;
+  document.getElementById('lc-sub').textContent=`레벨 ${lvIdx+1} 클리어! ${lv.n}`;
+  document.getElementById('lc-stars').textContent='⭐⭐⭐';
+
+  const nb=document.getElementById('next-btn');
+  if(lvIdx>=49){nb.textContent='🏆 완전 완성!';nb.onclick=showGameComplete;}
+  else{nb.textContent='다음 레벨 ▶';nb.onclick=nextLevel;}
+
+  sndComplete();
+  confetti();
+  localStorage.setItem('legoLvl',Math.min(lvIdx+1,49).toString());
+  show('lcs');
+}
+
+function nextLevel(){
+  lvIdx++;
+  if(lvIdx>=50){showGameComplete();return;}
+  loadLevel();
+  show('gs');
+}
+
+function showGameComplete(){
+  confetti();setTimeout(confetti,600);
+  localStorage.setItem('legoLvl','0');
+  show('gcs');
+}
+
+function restartAll(){
+  lvIdx=0;localStorage.setItem('legoLvl','0');
+  loadLevel();show('gs');
+}
+
+// ══════════════════════════════════════════════
+//  EFFECTS
+// ══════════════════════════════════════════════
+function spawnParticles(brick,c){
+  const rect=brick.getBoundingClientRect();
+  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  const emojis=['✨','⭐','💥','🌟','🎉'];
+  for(let i=0;i<5;i++){
+    const p=document.createElement('div');
+    p.className='pt';
+    p.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*120}px;--dy:${-50-Math.random()*80}px;color:${C[c].h};`;
+    p.textContent=emojis[0|Math.random()*emojis.length];
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1050);
+  }
+}
+
+function confetti(){
+  const cols=['#E3000B','#FFD700','#006DB7','#00A650','#FF8C00','#FF69B4','#9B4DCA','#00C4D4'];
+  for(let i=0;i<55;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='cf';
+      const w=7+Math.random()*8,h=10+Math.random()*10;
+      c.style.cssText=`left:${Math.random()*100}vw;background:${cols[0|Math.random()*cols.length]};width:${w}px;height:${h}px;animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*.4}s;border-radius:${Math.random()>.5?'50%':'2px'};`;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),3200);
+    },i*28);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  const saved=+localStorage.getItem('legoLvl')||0;
+  if(saved>0){
+    document.getElementById('t-sub-txt').textContent=`레벨 ${saved+1}부터 계속하기!`;
+  }
+  // Prevent scroll bounce on mobile
+  document.body.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+});
+</script>
+</body>
+</html>
