@@ -301,17 +301,37 @@ document.getElementById('bottomNav').addEventListener('click', e => {
 /* ── GPS Button ── */
 document.getElementById('gpsBtn').addEventListener('click', () => {
   if (!navigator.geolocation) { showToastMsg('⚠️', 'GPS 미지원', '이 브라우저에서는 위치 서비스를 사용할 수 없습니다.'); return; }
-  navigator.geolocation.getCurrentPosition(pos => {
+  navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
+    const today = new Date().toISOString().slice(0, 10);
+    const dates = JSON.parse(localStorage.getItem('kp_dates') || '{}');
+
+    /* 1. 하드코딩 스탬프 중 반경 300m 이내 체크 */
     let found = 0;
     STAMPS.forEach(s => {
       if (!earned.has(s.id) && distKm(latitude, longitude, s.lat, s.lng) < 0.3) {
-        const dates = JSON.parse(localStorage.getItem('kp_dates') || '{}');
-        dates[s.id] = new Date().toISOString().slice(0,10);
+        dates[s.id] = today;
         localStorage.setItem('kp_dates', JSON.stringify(dates));
         collect(s.id); found++;
       }
     });
+
+    /* 2. TourAPI 반경 검색 (API 키가 있을 때만) */
+    if (TOUR_API.KEY) {
+      showToastMsg('🔍', 'TourAPI 검색 중...', '주변 공식 관광지를 조회합니다.');
+      const apiStamps = await TOUR_API.nearbyStamps(latitude, longitude, 300);
+      apiStamps.forEach(s => {
+        if (!STAMPS.find(x => x.id === s.id)) {
+          STAMPS.push(s);  // 동적 추가
+        }
+        if (!earned.has(s.id)) {
+          dates[s.id] = today;
+          localStorage.setItem('kp_dates', JSON.stringify(dates));
+          collect(s.id); found++;
+        }
+      });
+    }
+
     if (!found) showToastMsg('📍', '근처 스탬프 없음', '장소를 직접 탭해 데모 수집이 가능합니다.');
   }, () => showToastMsg('⚠️', '위치 거부됨', 'Safari 설정 > 개인정보 > 위치 서비스를 허용하세요.'));
 });
