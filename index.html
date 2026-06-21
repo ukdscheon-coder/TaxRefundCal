@@ -1,97 +1,155 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" id="htmlRoot">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="theme-color" content="#0d0d1a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Korea Passport" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <title>Korea Passport | 한국 스탬프 여권</title>
+  <title>Korea Passport | 스탬프 여권</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app">
+<div id="app">
 
-    <!-- TAB: PASSPORT (cover + stamp pages) -->
-    <div id="tab-passport" class="tab-content active">
-      <div class="safe-top"></div>
+  <!-- ══ TAB: PASSPORT ══ -->
+  <div id="tab-passport" class="tab-content active">
+    <div class="safe-top"></div>
 
-      <!-- Passport Cover -->
-      <div class="passport-cover">
+    <!-- Passport Cover -->
+    <div class="passport-cover">
+      <div class="cover-top-row">
         <div class="cover-emblem">🇰🇷</div>
-        <p class="cover-country">대한민국 · REPUBLIC OF KOREA</p>
-        <h1 class="cover-title">STAMP PASSPORT</h1>
-        <p class="cover-sub">스탬프 여권</p>
-        <div class="cover-progress">
-          <span id="coverCount">0</span><span class="cover-slash">/</span><span id="coverTotal">0</span>
-          <span class="cover-label">스탬프 획득</span>
-        </div>
+        <!-- 언어 선택 버튼 -->
+        <button id="langBtn" class="lang-btn">🌐 한국어</button>
       </div>
-
-      <!-- Stamp Pages -->
-      <div class="stamp-pages-header">
-        <span>📋 전체 스탬프 장소</span>
-        <span id="regionFilter" class="region-tabs"></span>
-      </div>
-
-      <div class="scroll-area">
-        <div id="stampGrid" class="stamp-grid"></div>
-      </div>
-
-      <div class="passport-actions">
-        <button id="gpsBtn" class="btn-gps">📍 현위치 확인</button>
-        <button id="shareBtn" class="btn-share">📤 공유</button>
+      <p class="cover-country">대한민국 · REPUBLIC OF KOREA</p>
+      <h1 class="cover-title">STAMP PASSPORT</h1>
+      <p class="cover-sub">스탬프 여권</p>
+      <div class="cover-progress">
+        <span id="coverCount">0</span><span class="cover-slash">/</span><span id="coverTotal">0</span>
+        <span class="cover-label">스탬프 획득</span>
       </div>
     </div>
 
-    <!-- TAB: MAP LIST -->
-    <div id="tab-list" class="tab-content">
-      <div class="safe-top"></div>
-      <div class="scroll-area">
-        <h2 class="section-title">스탬프 장소 목록</h2>
-        <div class="search-row">
-          <input id="searchInput" type="search" placeholder="장소명 검색..." class="search-input" />
-        </div>
-        <div id="locationList" class="location-list"></div>
+    <!-- 언어 선택 패널 -->
+    <div id="langPanel" class="lang-panel hidden">
+      <p class="lang-panel-title">언어 선택 / Select Language</p>
+      <div id="langGrid" class="lang-grid"></div>
+      <p class="lang-panel-note">API 키가 입력된 언어만 활성화됩니다.</p>
+    </div>
+
+    <!-- 지역 필터 탭 -->
+    <div class="stamp-pages-header">
+      <span id="stampPageLabel">📋 전체 스탬프 장소</span>
+      <span id="regionFilter" class="region-tabs"></span>
+    </div>
+
+    <div class="scroll-area">
+      <div id="stampGrid" class="stamp-grid"></div>
+      <!-- API 로딩 버튼 -->
+      <div id="apiLoadRow" class="api-load-row hidden">
+        <button id="loadApiBtn" class="btn-api-load">🔄 TourAPI에서 장소 불러오기</button>
       </div>
     </div>
 
-    <!-- TAB: PARTNERSHIP -->
-    <div id="tab-partner" class="tab-content">
-      <div class="safe-top"></div>
-      <div class="scroll-area">
-        <h2 class="section-title">관공서 연계 안내</h2>
-        <div class="partner-cards" id="partnerCards"></div>
-      </div>
+    <div class="passport-actions">
+      <button id="gpsBtn" class="btn-gps">📍 현위치 확인</button>
+      <button id="shareBtn" class="btn-share">📤 공유</button>
     </div>
-
-    <!-- BOTTOM NAV -->
-    <nav id="bottomNav">
-      <button data-tab="passport" class="nav-btn active">
-        <span>🗺️</span><span>여권</span>
-      </button>
-      <button data-tab="list" class="nav-btn">
-        <span>📋</span><span>장소목록</span>
-      </button>
-      <button data-tab="partner" class="nav-btn">
-        <span>🏛️</span><span>관공서연계</span>
-      </button>
-    </nav>
-
-    <!-- STAMP TOAST -->
-    <div id="toast" class="toast hidden">
-      <div id="toastStamp" class="toast-stamp-mini"></div>
-      <div>
-        <strong id="toastTitle"></strong>
-        <p id="toastSub"></p>
-      </div>
-    </div>
-
   </div>
-  <script src="tourapi.js"></script>
-  <script src="app.js"></script>
+
+  <!-- ══ TAB: SEARCH / LIST ══ -->
+  <div id="tab-list" class="tab-content">
+    <div class="safe-top"></div>
+    <div class="scroll-area">
+      <h2 class="section-title">장소 검색</h2>
+
+      <!-- 검색 타입 선택 -->
+      <div class="search-type-row" id="searchTypeRow"></div>
+
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="장소명 검색 (TourAPI 연동)..." class="search-input" />
+        <button id="searchApiBtn" class="btn-search-api">🔍</button>
+      </div>
+
+      <!-- 축제/행사 버튼 -->
+      <button id="festivalBtn" class="btn-festival">🎪 현재 진행 중인 축제 보기</button>
+
+      <!-- 두루누비 트레일 -->
+      <div class="trail-section">
+        <div class="trail-header">
+          <span>🥾 두루누비 걷기여행길</span>
+          <button id="loadTrailBtn" class="btn-trail-load">불러오기</button>
+        </div>
+        <div id="trailList" class="trail-list"></div>
+      </div>
+
+      <h3 class="list-subtitle">전체 스탬프 목록</h3>
+      <div id="locationList" class="location-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: PARTNERSHIP ══ -->
+  <div id="tab-partner" class="tab-content">
+    <div class="safe-top"></div>
+    <div class="scroll-area">
+      <h2 class="section-title">관공서 연계 안내</h2>
+
+      <!-- API 상태 패널 -->
+      <div class="api-status-card" id="apiStatusCard">
+        <h3>📡 TourAPI 연결 상태</h3>
+        <div id="apiStatusList" class="api-status-list"></div>
+      </div>
+
+      <div class="partner-cards" id="partnerCards"></div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav id="bottomNav">
+    <button data-tab="passport" class="nav-btn active">
+      <span>🗺️</span><span>여권</span>
+    </button>
+    <button data-tab="list" class="nav-btn">
+      <span>🔍</span><span>검색</span>
+    </button>
+    <button data-tab="partner" class="nav-btn">
+      <span>🏛️</span><span>연계</span>
+    </button>
+  </nav>
+
+  <!-- ══ STAMP TOAST ══ -->
+  <div id="toast" class="toast hidden">
+    <div id="toastStamp" class="toast-stamp-mini"></div>
+    <div>
+      <strong id="toastTitle"></strong>
+      <p id="toastSub"></p>
+    </div>
+  </div>
+
+  <!-- ══ DETAIL MODAL ══ -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-sheet">
+      <div class="modal-img-wrap"><img id="modalImg" src="" alt="" /></div>
+      <div class="modal-body">
+        <div id="modalStamp" class="modal-stamp"></div>
+        <h2 id="modalTitle"></h2>
+        <p id="modalAddr" class="modal-addr"></p>
+        <p id="modalOverview" class="modal-overview"></p>
+        <div id="modalMeta" class="modal-meta"></div>
+        <button id="modalCollect" class="btn-modal-collect">✅ 스탬프 수집</button>
+        <button id="modalClose" class="btn-modal-close">닫기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="tourapi.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
