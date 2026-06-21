@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0d0d1a" />
+  <meta name="theme-color" content="#0a1628" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Korea Passport" />
@@ -13,121 +13,198 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+<!-- ══ ONBOARDING ══ -->
+<div id="onboarding" class="onboarding hidden">
+  <div class="ob-slides" id="obSlides">
+    <div class="ob-slide">
+      <div class="ob-emoji">🇰🇷</div>
+      <h2>Korea Stamp Passport</h2>
+      <p>한국 전역의 명소를 방문하고<br>공식 스탬프를 모으세요.</p>
+    </div>
+    <div class="ob-slide">
+      <div class="ob-emoji">📍</div>
+      <h2>GPS 자동 인증</h2>
+      <p>장소에 방문하면 GPS가 자동으로<br>스탬프를 발급합니다.</p>
+    </div>
+    <div class="ob-slide">
+      <div class="ob-emoji">📷</div>
+      <h2>QR 스캔 인증</h2>
+      <p>관광안내소의 QR코드를 스캔하면<br>공식 스탬프를 받을 수 있습니다.</p>
+    </div>
+    <div class="ob-slide">
+      <div class="ob-emoji">🏆</div>
+      <h2>업적 & 컬렉션</h2>
+      <p>지역·테마별 컬렉션을 완성하고<br>특별 업적 배지를 획득하세요.</p>
+    </div>
+  </div>
+  <div class="ob-dots" id="obDots"></div>
+  <button id="obNext" class="ob-btn">다음</button>
+  <button id="obSkip" class="ob-skip">건너뛰기</button>
+</div>
+
 <div id="app">
 
-  <!-- ══ TAB: PASSPORT ══ -->
+  <!-- ══ TAB: PASSPORT (여권 커버 + 스탬프 페이지) ══ -->
   <div id="tab-passport" class="tab-content active">
     <div class="safe-top"></div>
 
     <!-- Passport Cover -->
     <div class="passport-cover">
       <div class="cover-top-row">
-        <div class="cover-emblem">🇰🇷</div>
-        <!-- 언어 선택 버튼 -->
-        <button id="langBtn" class="lang-btn">🌐 한국어</button>
+        <div class="cover-left">
+          <div class="cover-emblem">🇰🇷</div>
+          <div>
+            <p class="cover-country">대한민국 · REPUBLIC OF KOREA</p>
+            <h1 class="cover-title">STAMP PASSPORT</h1>
+          </div>
+        </div>
+        <button id="langBtn" class="lang-btn">🌐 KOR</button>
       </div>
-      <p class="cover-country">대한민국 · REPUBLIC OF KOREA</p>
-      <h1 class="cover-title">STAMP PASSPORT</h1>
-      <p class="cover-sub">스탬프 여권</p>
-      <div class="cover-progress">
-        <span id="coverCount">0</span><span class="cover-slash">/</span><span id="coverTotal">0</span>
-        <span class="cover-label">스탬프 획득</span>
+
+      <!-- Progress Ring -->
+      <div class="cover-stats-row">
+        <div class="progress-ring-wrap">
+          <svg class="progress-ring" width="72" height="72" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(201,168,76,.2)" stroke-width="5"/>
+            <circle id="ringCircle" cx="36" cy="36" r="30" fill="none" stroke="#c9a84c" stroke-width="5"
+              stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5"
+              transform="rotate(-90 36 36)" style="transition:stroke-dashoffset .6s ease"/>
+          </svg>
+          <div class="ring-label">
+            <span id="coverCount">0</span>
+            <span class="ring-sub" id="coverTotal">/0</span>
+          </div>
+        </div>
+        <div class="cover-mini-stats">
+          <div class="cms-item"><span id="statCities">0</span><span>도시</span></div>
+          <div class="cms-item"><span id="statRegions">0</span><span>지역</span></div>
+          <div class="cms-item"><span id="statAchieve">0</span><span>업적</span></div>
+        </div>
+      </div>
+
+      <div class="cover-action-row">
+        <button id="gpsBtn" class="btn-gps">📍 GPS 체크인</button>
+        <button id="qrBtn" class="btn-qr">📷 QR 스캔</button>
+        <button id="shareBtn" class="btn-share-sm">📤</button>
       </div>
     </div>
 
-    <!-- 언어 선택 패널 -->
-    <div id="langPanel" class="lang-panel hidden">
-      <p class="lang-panel-title">언어 선택 / Select Language</p>
-      <div id="langGrid" class="lang-grid"></div>
-      <p class="lang-panel-note">API 키가 입력된 언어만 활성화됩니다.</p>
+    <!-- View Toggle -->
+    <div class="view-toggle-row">
+      <button id="viewGrid" class="vtoggle active">⊞ 그리드</button>
+      <button id="viewBook" class="vtoggle">📖 여권 페이지</button>
+      <div id="regionFilter" class="region-tabs"></div>
     </div>
 
-    <!-- 지역 필터 탭 -->
-    <div class="stamp-pages-header">
-      <span id="stampPageLabel">📋 전체 스탬프 장소</span>
-      <span id="regionFilter" class="region-tabs"></span>
-    </div>
-
-    <div class="scroll-area">
+    <div class="scroll-area" id="passportScroll">
+      <!-- Grid view -->
       <div id="stampGrid" class="stamp-grid"></div>
-      <!-- API 로딩 버튼 -->
-      <div id="apiLoadRow" class="api-load-row hidden">
-        <button id="loadApiBtn" class="btn-api-load">🔄 TourAPI에서 장소 불러오기</button>
-      </div>
-    </div>
-
-    <div class="passport-actions">
-      <button id="gpsBtn" class="btn-gps">📍 현위치 확인</button>
-      <button id="shareBtn" class="btn-share">📤 공유</button>
+      <!-- Book view -->
+      <div id="bookView" class="book-view hidden"></div>
     </div>
   </div>
 
-  <!-- ══ TAB: SEARCH / LIST ══ -->
-  <div id="tab-list" class="tab-content">
+  <!-- ══ TAB: SEARCH ══ -->
+  <div id="tab-search" class="tab-content">
     <div class="safe-top"></div>
     <div class="scroll-area">
-      <h2 class="section-title">장소 검색</h2>
-
-      <!-- 검색 타입 선택 -->
-      <div class="search-type-row" id="searchTypeRow"></div>
-
-      <div class="search-row">
-        <input id="searchInput" type="search" placeholder="장소명 검색 (TourAPI 연동)..." class="search-input" />
-        <button id="searchApiBtn" class="btn-search-api">🔍</button>
+      <div class="search-header">
+        <h2>장소 검색</h2>
+        <div class="search-bar">
+          <input id="searchInput" type="search" placeholder="장소명, 지역, 기관 검색..." class="search-input" />
+          <button id="searchApiBtn" class="btn-search-api">🔍</button>
+        </div>
+        <div class="search-type-row" id="searchTypeRow"></div>
       </div>
 
-      <!-- 축제/행사 버튼 -->
-      <button id="festivalBtn" class="btn-festival">🎪 현재 진행 중인 축제 보기</button>
+      <!-- Festival Banner -->
+      <button id="festivalBtn" class="festival-banner">
+        <span class="fb-icon">🎪</span>
+        <div><strong>지금 열리는 축제</strong><p>현재 진행 중인 행사 · 축제 보기</p></div>
+        <span class="fb-arr">›</span>
+      </button>
 
-      <!-- 두루누비 트레일 -->
-      <div class="trail-section">
-        <div class="trail-header">
+      <!-- Trail Section -->
+      <div class="section-block">
+        <div class="section-block-header">
           <span>🥾 두루누비 걷기여행길</span>
-          <button id="loadTrailBtn" class="btn-trail-load">불러오기</button>
+          <button id="loadTrailBtn" class="btn-sm-ghost">불러오기</button>
         </div>
         <div id="trailList" class="trail-list"></div>
       </div>
 
-      <h3 class="list-subtitle">전체 스탬프 목록</h3>
-      <div id="locationList" class="location-list"></div>
+      <!-- Results -->
+      <div class="section-block">
+        <div class="section-block-header">
+          <span>📋 전체 목록 (<span id="locCount">0</span>)</span>
+        </div>
+        <div id="locationList" class="location-list"></div>
+      </div>
     </div>
   </div>
 
-  <!-- ══ TAB: PARTNERSHIP ══ -->
+  <!-- ══ TAB: ACHIEVEMENTS ══ -->
+  <div id="tab-achieve" class="tab-content">
+    <div class="safe-top"></div>
+    <div class="scroll-area">
+      <h2 class="section-title">업적 & 컬렉션</h2>
+
+      <!-- Overall Stats Bar -->
+      <div class="stats-card" id="statsCard"></div>
+
+      <!-- Achievement List -->
+      <h3 class="sub-title">🏆 업적</h3>
+      <div id="achieveList" class="achieve-list"></div>
+
+      <!-- Collection Sets -->
+      <h3 class="sub-title">📚 컬렉션</h3>
+      <div id="collectionList" class="collection-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: PARTNER ══ -->
   <div id="tab-partner" class="tab-content">
     <div class="safe-top"></div>
     <div class="scroll-area">
-      <h2 class="section-title">관공서 연계 안내</h2>
-
-      <!-- API 상태 패널 -->
+      <h2 class="section-title">관공서 연계</h2>
       <div class="api-status-card" id="apiStatusCard">
         <h3>📡 TourAPI 연결 상태</h3>
         <div id="apiStatusList" class="api-status-list"></div>
+        <p class="api-hint">tourapi.js → KEYS 객체에 인증키 입력</p>
       </div>
-
       <div class="partner-cards" id="partnerCards"></div>
     </div>
   </div>
 
   <!-- ══ BOTTOM NAV ══ -->
   <nav id="bottomNav">
-    <button data-tab="passport" class="nav-btn active">
-      <span>🗺️</span><span>여권</span>
-    </button>
-    <button data-tab="list" class="nav-btn">
-      <span>🔍</span><span>검색</span>
-    </button>
-    <button data-tab="partner" class="nav-btn">
-      <span>🏛️</span><span>연계</span>
-    </button>
+    <button data-tab="passport" class="nav-btn active"><span>🗺️</span><span>여권</span></button>
+    <button data-tab="search"   class="nav-btn"><span>🔍</span><span>검색</span></button>
+    <button data-tab="achieve"  class="nav-btn"><span>🏆</span><span>업적</span></button>
+    <button data-tab="partner"  class="nav-btn"><span>🏛️</span><span>연계</span></button>
   </nav>
 
-  <!-- ══ STAMP TOAST ══ -->
+  <!-- ══ TOAST ══ -->
   <div id="toast" class="toast hidden">
     <div id="toastStamp" class="toast-stamp-mini"></div>
-    <div>
-      <strong id="toastTitle"></strong>
-      <p id="toastSub"></p>
+    <div><strong id="toastTitle"></strong><p id="toastSub"></p></div>
+  </div>
+
+  <!-- ══ QR SCANNER OVERLAY ══ -->
+  <div id="qrOverlay" class="qr-overlay hidden">
+    <div class="qr-header">
+      <button id="qrClose" class="qr-close">✕</button>
+      <span>QR 코드 스캔</span>
+    </div>
+    <div class="qr-viewfinder">
+      <video id="qrVideo" autoplay playsinline muted></video>
+      <div class="qr-frame">
+        <div class="qr-corner tl"></div><div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div><div class="qr-corner br"></div>
+        <div class="qr-scan-line"></div>
+      </div>
+      <p class="qr-hint">관광안내소 QR코드에 카메라를 맞춰주세요</p>
     </div>
   </div>
 
@@ -135,20 +212,21 @@
   <div id="modal" class="modal hidden">
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-sheet">
-      <div class="modal-img-wrap"><img id="modalImg" src="" alt="" /></div>
+      <div class="modal-img-wrap"><img id="modalImg" src="" alt="" onerror="this.style.display='none'" /></div>
       <div class="modal-body">
-        <div id="modalStamp" class="modal-stamp"></div>
+        <div id="modalStamp" class="modal-stamp-icon"></div>
         <h2 id="modalTitle"></h2>
         <p id="modalAddr" class="modal-addr"></p>
         <p id="modalOverview" class="modal-overview"></p>
         <div id="modalMeta" class="modal-meta"></div>
-        <button id="modalCollect" class="btn-modal-collect">✅ 스탬프 수집</button>
-        <button id="modalClose" class="btn-modal-close">닫기</button>
+        <button id="modalCollect" class="btn-modal-collect">✅ 스탬프 수집하기</button>
+        <button id="modalClose"   class="btn-modal-close">닫기</button>
       </div>
     </div>
   </div>
 
-</div>
+</div><!-- #app -->
+
 <script src="tourapi.js"></script>
 <script src="app.js"></script>
 </body>
