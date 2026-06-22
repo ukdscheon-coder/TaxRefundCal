@@ -1,637 +1,821 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🧱 LEGO 브릭 어드벤처!</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#003399">
+<title>WeNote UK | Neighbourhood Board</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{
-  font-family:'Arial Rounded MT Bold',Arial,sans-serif;
-  background:#16213e;
-  display:flex;justify-content:center;align-items:center;
-  min-height:100vh;overflow:hidden;user-select:none;
-  touch-action:manipulation;
+:root{
+  --navy:#003399;--red:#CC0000;--gold:#FFD700;
+  --bg:#F0F2F5;--card:#FFFFFF;--border:#E0E4EA;
+  --text:#1A1A2E;--sub:#6B7280;--accent:#003399;
+  --green:#16A34A;--orange:#EA580C;--purple:#7C3AED;
+  --pink:#DB2777;--teal:#0D9488;--yellow:#CA8A04;
+  --shadow:0 2px 12px rgba(0,51,153,.08);
+  --radius:16px;
 }
-#gc{
-  width:100%;max-width:480px;height:100vh;max-height:900px;
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;}
+
+/* ── HEADER ── */
+#header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--navy);
+  padding:env(safe-area-inset-top,0) 0 0;
+}
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;}
+.hdr-brand{display:flex;align-items:center;gap:10px;}
+.hdr-logo{width:36px;height:36px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.hdr-title{color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;}
+.hdr-sub{color:rgba(255,255,255,.65);font-size:11px;margin-top:1px;}
+.hdr-right{display:flex;gap:8px;}
+.hdr-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;}
+.hdr-btn:active{background:rgba(255,255,255,.25);}
+
+/* ── CATEGORY TABS ── */
+#cats{
+  background:var(--navy);
+  padding:0 12px 12px;
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+}
+#cats::-webkit-scrollbar{display:none;}
+.cat-tab{
+  flex-shrink:0;background:rgba(255,255,255,.15);border:none;color:rgba(255,255,255,.8);
+  border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px;
+}
+.cat-tab.active{background:#fff;color:var(--navy);}
+.cat-tab:active{transform:scale(.95);}
+
+/* ── MAIN SCROLL ── */
+#main{margin-top:0;padding-bottom:90px;}
+.scroll-pad{height:112px;}
+
+/* ── SEARCH BAR ── */
+.search-wrap{padding:12px 14px;position:sticky;top:112px;z-index:50;background:var(--bg);}
+.search-box{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border-radius:14px;padding:10px 14px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);
+}
+.search-box input{
+  flex:1;border:none;outline:none;font-size:15px;color:var(--text);background:transparent;
+}
+.search-box input::placeholder{color:var(--sub);}
+.search-icon{font-size:18px;color:var(--sub);}
+
+/* ── PINNED BANNER ── */
+.pinned-banner{
+  margin:0 14px 12px;
+  background:linear-gradient(135deg,#003399,#0055CC);
+  border-radius:var(--radius);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,51,153,.25);
+}
+.pin-icon{font-size:28px;}
+.pin-text{flex:1;}
+.pin-title{color:#fff;font-size:15px;font-weight:700;}
+.pin-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:2px;}
+.pin-arr{color:rgba(255,255,255,.6);font-size:20px;}
+
+/* ── SECTION HEADER ── */
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;margin:4px 0 10px;
+}
+.section-hdr h2{font-size:17px;font-weight:700;color:var(--text);}
+.section-hdr span{font-size:13px;color:var(--sub);}
+
+/* ── NOTE CARD ── */
+.notes-list{padding:0 14px;display:flex;flex-direction:column;gap:12px;}
+.note-card{
+  background:#fff;border-radius:var(--radius);padding:16px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
   position:relative;overflow:hidden;
 }
+.note-card:active{transform:scale(.985);box-shadow:0 1px 6px rgba(0,51,153,.06);}
+.note-card.pinned::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),#FFA500);
+}
+.note-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.cat-badge{
+  flex-shrink:0;width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.note-meta{flex:1;}
+.note-cat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.note-time{font-size:12px;color:var(--sub);}
+.note-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.35;}
+.note-body{font-size:14px;color:#4B5563;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.note-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.note-author{display:flex;align-items:center;gap:6px;}
+.author-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.author-name{font-size:13px;color:var(--sub);font-weight:500;}
+.note-actions{display:flex;align-items:center;gap:12px;}
+.action-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--sub);padding:4px 6px;border-radius:8px;transition:all .15s;}
+.action-btn:active{background:var(--bg);transform:scale(.9);}
+.action-btn.liked{color:var(--red);}
+.action-btn span{font-size:15px;}
 
-/* ── SCREENS ── */
-.screen{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .35s,transform .35s;
+/* ── WEATHER WIDGET ── */
+.weather-card{
+  margin:0 14px 16px;background:#fff;border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
 }
-.screen.off{opacity:0;pointer-events:none;transform:scale(.96);}
+.wx-left{display:flex;align-items:center;gap:10px;}
+.wx-icon{font-size:36px;}
+.wx-temp{font-size:28px;font-weight:800;color:var(--navy);}
+.wx-unit{font-size:16px;color:var(--sub);font-weight:500;}
+.wx-desc{font-size:13px;color:var(--sub);margin-top:2px;}
+.wx-loc{font-size:13px;font-weight:600;color:var(--text);}
+.wx-right{text-align:right;}
+.wx-detail{font-size:12px;color:var(--sub);margin-top:3px;}
 
-/* ── TITLE ── */
-#ts{background:linear-gradient(160deg,#FF6B00 0%,#E3000B 55%,#9B4DCA 100%);}
-.t-logo{font-size:80px;animation:bob .9s ease-in-out infinite alternate;}
-@keyframes bob{from{transform:translateY(0);}to{transform:translateY(-18px);}}
-.t-title{font-size:38px;font-weight:900;color:#fff;text-shadow:4px 4px 0 rgba(0,0,0,.3);line-height:1.1;text-align:center;}
-.t-sub{font-size:17px;color:rgba(255,255,255,.88);margin:10px 0 36px;text-align:center;}
-.t-levels{font-size:13px;color:rgba(255,255,255,.6);margin-top:14px;}
+/* ── BOTTOM NAV ── */
+#bottomNav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1.5px solid var(--border);
+  display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);
+  z-index:100;box-shadow:0 -2px 16px rgba(0,0,0,.06);
+}
+.nav-btn{
+  flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;
+  gap:3px;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;padding:4px 0;
+  transition:color .15s;
+}
+.nav-btn.active{color:var(--navy);}
+.nav-btn .nav-icon{font-size:22px;transition:transform .15s;}
+.nav-btn.active .nav-icon{transform:scale(1.1);}
 
-/* ── GAME ── */
-#gs{background:#f5e0c0;flex-direction:column;justify-content:flex-start;}
+/* ── FAB ── */
+#fab{
+  position:fixed;bottom:80px;right:18px;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#CC0000,#FF3333);
+  border:none;color:#fff;font-size:28px;cursor:pointer;
+  box-shadow:0 4px 18px rgba(204,0,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s,box-shadow .2s;z-index:99;
+}
+#fab:active{transform:scale(.9);box-shadow:0 2px 10px rgba(204,0,0,.3);}
 
-#hdr{
-  width:100%;background:linear-gradient(90deg,#FF6B00,#E3000B);
-  padding:10px 14px;display:flex;align-items:center;gap:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,.25);flex-shrink:0;
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
 }
-#lvl-txt{font-size:19px;font-weight:900;color:#fff;white-space:nowrap;}
-#lvl-bar{flex:1;height:14px;background:rgba(255,255,255,.3);border-radius:7px;overflow:hidden;}
-#lvl-fill{height:100%;background:#fff;border-radius:7px;transition:width .6s ease;}
-#lvl-ico{font-size:28px;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-sheet{
+  background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.24,1);
+  padding-bottom:env(safe-area-inset-bottom,20px);
+}
+.modal-overlay.open .modal-sheet{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:#E0E4EA;border-radius:2px;margin:12px auto 16px;}
+.modal-inner{padding:0 20px 20px;}
+.modal-cat-badge{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px;}
+.modal-cat-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.modal-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;line-height:1.3;}
+.modal-body{font-size:15px;color:#374151;line-height:1.65;margin-bottom:16px;}
+.modal-meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.meta-chip{background:var(--bg);border-radius:20px;padding:5px 12px;font-size:13px;color:var(--sub);font-weight:500;}
+.modal-actions{display:flex;gap:10px;}
+.modal-btn{flex:1;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;}
+.modal-btn:active{transform:scale(.97);}
+.modal-btn-like{background:linear-gradient(135deg,#CC0000,#FF3333);color:#fff;}
+.modal-btn-share{background:var(--bg);color:var(--text);}
 
-#tp{
-  width:100%;padding:10px 14px 12px;background:#fff;
-  box-shadow:0 3px 10px rgba(0,0,0,.12);flex-shrink:0;
+/* ── COMPOSE ── */
+.compose-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
 }
-#lvl-name{font-size:21px;font-weight:900;color:#333;text-align:center;margin-bottom:10px;}
-#req-panel{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
-.req-item{
-  display:flex;flex-direction:column;align-items:center;
-  background:#f2f2f2;border-radius:12px;padding:7px 10px;min-width:58px;
-  border:3px solid transparent;transition:all .3s;
+.compose-overlay.open{opacity:1;pointer-events:all;}
+.compose-sheet{
+  background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;
+  max-height:95vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.24,1);
+  padding-bottom:env(safe-area-inset-bottom,20px);
 }
-.req-item.done{background:#d4f5e2;border-color:#28a745;}
-.rb{
-  width:44px;height:30px;border-radius:5px;position:relative;
-  margin-bottom:4px;
+.compose-overlay.open .compose-sheet{transform:translateY(0);}
+.compose-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
+.compose-hdr h3{font-size:18px;font-weight:800;}
+.compose-close{background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;}
+.compose-form{padding:0 20px 20px;display:flex;flex-direction:column;gap:14px;}
+.form-label{font-size:13px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--text);outline:none;font-family:inherit;transition:border-color .15s;}
+.form-input:focus{border-color:var(--navy);}
+textarea.form-input{resize:none;height:110px;}
+.cat-picker{display:flex;flex-wrap:wrap;gap:8px;}
+.cat-pick-btn{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;
+  border:1.5px solid var(--border);border-radius:20px;background:#fff;
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text);
 }
-.rb-stud{
-  position:absolute;top:-7px;width:14px;height:8px;
-  border-radius:50%;opacity:.9;
+.cat-pick-btn.selected{border-color:var(--navy);background:var(--navy);color:#fff;}
+.cat-pick-btn:active{transform:scale(.95);}
+.submit-btn{
+  width:100%;padding:15px;background:linear-gradient(135deg,var(--navy),#0055CC);
+  color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;
+  cursor:pointer;transition:all .15s;
 }
-.rc{font-size:13px;font-weight:900;color:#444;}
-.rc.ok{color:#28a745;}
+.submit-btn:active{transform:scale(.98);}
 
-/* ── BRICK FIELD ── */
-#bf{
-  flex:1;width:100%;position:relative;overflow:hidden;
-  background:linear-gradient(180deg,#c9a96e 0%,#a07848 100%);
-  border-top:4px solid #8B6340;
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:env(safe-area-inset-top,0);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#1A1A2E;color:#fff;border-radius:12px;padding:12px 20px;
+  font-size:14px;font-weight:600;z-index:500;transition:transform .3s cubic-bezier(.32,1,.24,1);
+  white-space:nowrap;max-width:90vw;text-align:center;
 }
-#bf::before{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(88deg,transparent 0,transparent 55px,rgba(0,0,0,.04) 55px,rgba(0,0,0,.04) 57px);
-  pointer-events:none;
-}
+#toast.show{transform:translateX(-50%) translateY(calc(env(safe-area-inset-top,0) + 16px));}
 
-/* ── BRICKS ── */
-.brick{position:absolute;cursor:pointer;}
-.brick-body{
-  border-radius:5px;position:relative;
-  box-shadow:0 5px 0 var(--dark),inset 0 1px 0 rgba(255,255,255,.35);
-}
-.stud{
-  position:absolute;top:-7px;border-radius:50%;
-  box-shadow:0 -2px 0 var(--dark);
-}
-@keyframes popOut{
-  0%{transform:scale(1);opacity:1;}
-  50%{transform:scale(1.5);opacity:.8;}
-  100%{transform:scale(0);opacity:0;}
-}
-@keyframes shake{
-  0%,100%{transform:translateX(0) rotate(var(--r));}
-  25%{transform:translateX(-9px) rotate(var(--r));}
-  75%{transform:translateX(9px) rotate(var(--r));}
-}
-.brick.popping{animation:popOut .32s ease forwards;pointer-events:none;}
-.brick.shaking{animation:shake .38s ease;}
+/* ── EMPTY STATE ── */
+.empty-state{padding:40px 20px;text-align:center;}
+.empty-icon{font-size:56px;margin-bottom:12px;}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:6px;}
+.empty-sub{font-size:14px;color:var(--sub);}
 
-/* ── BUILD BUTTON ── */
-#build-btn{
-  position:absolute;bottom:18px;left:50%;
-  transform:translateX(-50%) scale(0);
-  background:linear-gradient(135deg,#FFD700,#FF8C00);
-  color:#fff;font-size:23px;font-weight:900;
-  border:none;border-radius:50px;padding:15px 38px;
-  cursor:pointer;
-  box-shadow:0 6px 0 rgba(0,0,0,.28),0 8px 22px rgba(255,140,0,.45);
-  transition:transform .42s cubic-bezier(.34,1.56,.64,1);
-  z-index:20;white-space:nowrap;
-}
-#build-btn.show{transform:translateX(-50%) scale(1);}
-#build-btn:active{transform:translateX(-50%) scale(.95) !important;box-shadow:0 3px 0 rgba(0,0,0,.28);}
+/* ── TAB CONTENT ── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
-/* ── PARTICLES ── */
-.pt{
-  position:fixed;pointer-events:none;font-size:20px;z-index:100;
-  animation:ptFly 1s ease forwards;
-}
-@keyframes ptFly{
-  0%{transform:translate(0,0) scale(1);opacity:1;}
-  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
-}
+/* ── PROFILE TAB ── */
+.profile-section{padding:20px 14px;}
+.profile-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:14px;}
+.profile-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--navy),#0055CC);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:700;}
+.profile-info h3{font-size:18px;font-weight:800;}
+.profile-info p{font-size:13px;color:var(--sub);margin-top:2px;}
+.profile-stats{display:flex;gap:0;border-top:1.5px solid var(--border);padding-top:16px;}
+.pstat{flex:1;text-align:center;}
+.pstat strong{display:block;font-size:22px;font-weight:800;color:var(--navy);}
+.pstat span{font-size:12px;color:var(--sub);}
+.pstat+.pstat{border-left:1.5px solid var(--border);}
+.settings-list{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
+.setting-row:last-child{border-bottom:none;}
+.setting-row:active{background:var(--bg);}
+.setting-left{display:flex;align-items:center;gap:10px;}
+.setting-icon{font-size:20px;width:28px;text-align:center;}
+.setting-label{font-size:15px;font-weight:500;}
+.setting-right{color:var(--sub);font-size:15px;}
 
-/* ── LEVEL COMPLETE ── */
-#lcs{background:linear-gradient(145deg,#667eea 0%,#764ba2 100%);z-index:20;}
-.lc-ico{font-size:82px;animation:pop .5s ease;margin-bottom:12px;}
-@keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
-.lc-t{font-size:40px;font-weight:900;color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,.2);}
-.lc-s{font-size:19px;color:rgba(255,255,255,.88);margin:8px 0 22px;text-align:center;padding:0 20px;}
-.stars{font-size:50px;letter-spacing:8px;margin-bottom:28px;}
+/* ── ALERTS TAB ── */
+.alerts-section{padding:14px;}
+.alert-item{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:10px;display:flex;gap:12px;}
+.alert-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;}
+.alert-dot.read{background:var(--border);}
+.alert-content h4{font-size:14px;font-weight:700;margin-bottom:3px;}
+.alert-content p{font-size:13px;color:var(--sub);}
+.alert-time{font-size:11px;color:var(--sub);margin-top:4px;}
 
-/* ── GAME COMPLETE ── */
-#gcs{background:linear-gradient(145deg,#f093fb 0%,#f5576c 100%);z-index:30;}
-
-/* ── BUTTONS ── */
-.btn{
-  background:#fff;color:#333;font-size:19px;font-weight:900;
-  border:none;border-radius:50px;padding:13px 36px;
-  cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.13);
-  transition:transform .1s,box-shadow .1s;margin:5px;
-}
-.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.13);}
-.btn-p{
-  background:linear-gradient(135deg,#FFD700,#FF6B00);
-  color:#fff;font-size:24px;padding:17px 48px;
-  box-shadow:0 5px 0 rgba(0,0,0,.2);
-}
-
-/* ── CONFETTI ── */
-.cf{
-  position:fixed;top:-24px;pointer-events:none;z-index:50;
-  animation:cfFall linear forwards;border-radius:2px;
-}
-@keyframes cfFall{
-  0%{transform:translateY(0) rotate(0deg);opacity:1;}
-  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
-}
-
-/* ── HINT BADGE ── */
-#hint{
-  position:absolute;top:8px;right:10px;
-  background:rgba(0,0,0,.45);color:#fff;
-  font-size:12px;padding:4px 10px;border-radius:20px;
-  z-index:10;pointer-events:none;opacity:0;transition:opacity .3s;
-}
-#hint.show{opacity:1;}
-
-/* ── LEVEL MAP BUTTON ── */
-#map-btn{
-  position:absolute;bottom:18px;right:14px;
-  background:rgba(0,0,0,.3);color:#fff;
-  border:none;border-radius:50%;width:44px;height:44px;
-  font-size:22px;cursor:pointer;z-index:5;
-}
+/* Colour utilities */
+.c-announce{background:#EFF6FF;}.cc-announce{color:#1D4ED8;}
+.c-event{background:#F0FDF4;}.cc-event{color:#15803D;}
+.c-lost{background:#FEF9C3;}.cc-lost{color:#A16207;}
+.c-help{background:#FFF7ED;}.cc-help{color:#C2410C;}
+.c-sale{background:#FDF4FF;}.cc-sale{color:#7E22CE;}
+.c-alert{background:#FFF1F2;}.cc-alert{color:#BE123C;}
 </style>
 </head>
 <body>
-<div id="gc">
 
-  <!-- TITLE -->
-  <div id="ts" class="screen">
-    <div class="t-logo">🧱</div>
-    <div class="t-title">LEGO 브릭<br>어드벤처!</div>
-    <div class="t-sub" id="t-sub-txt">벽돌을 모아서 뚝딱 만들어봐요!</div>
-    <button class="btn btn-p" onclick="startGame()">🎮 시작하기!</button>
-    <div class="t-levels">총 50레벨 도전!</div>
-  </div>
-
-  <!-- GAME -->
-  <div id="gs" class="screen off">
-    <div id="hdr">
-      <div id="lvl-txt">레벨 1</div>
-      <div id="lvl-bar"><div id="lvl-fill" style="width:2%"></div></div>
-      <div id="lvl-ico">🧱</div>
+<!-- HEADER -->
+<div id="header">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <div class="hdr-logo">🇬🇧</div>
+      <div>
+        <div class="hdr-title">WeNote UK</div>
+        <div class="hdr-sub" id="hdrLocation">Your Neighbourhood Board</div>
+      </div>
     </div>
-    <div id="tp">
-      <div id="lvl-name">빨간 탑 🏠</div>
-      <div id="req-panel"></div>
-    </div>
-    <div id="bf">
-      <div id="hint">이미 다 모았어요!</div>
-      <button id="build-btn" onclick="triggerBuild()">🏗️ 건설하기!</button>
+    <div class="hdr-right">
+      <button class="hdr-btn" onclick="showToast('🔔 No new notifications')">🔔</button>
+      <button class="hdr-btn" onclick="switchTab('profile')">👤</button>
     </div>
   </div>
-
-  <!-- LEVEL COMPLETE -->
-  <div id="lcs" class="screen off">
-    <div class="lc-ico" id="lc-ico">🎉</div>
-    <div class="lc-t">완성!</div>
-    <div class="lc-s" id="lc-sub">레벨 1 클리어!</div>
-    <div class="stars" id="lc-stars">⭐⭐⭐</div>
-    <button class="btn btn-p" id="next-btn" onclick="nextLevel()">다음 레벨 ▶</button>
-    <button class="btn" onclick="goTitle()" style="font-size:16px;padding:11px 26px;">처음으로</button>
+  <div id="cats">
+    <button class="cat-tab active" data-cat="all" onclick="filterCat(this,'all')">🏡 All</button>
+    <button class="cat-tab" data-cat="announce" onclick="filterCat(this,'announce')">📣 Announcements</button>
+    <button class="cat-tab" data-cat="event" onclick="filterCat(this,'event')">🎉 Events</button>
+    <button class="cat-tab" data-cat="lost" onclick="filterCat(this,'lost')">🔍 Lost &amp; Found</button>
+    <button class="cat-tab" data-cat="help" onclick="filterCat(this,'help')">🙏 Help Needed</button>
+    <button class="cat-tab" data-cat="sale" onclick="filterCat(this,'sale')">🛒 For Sale / Free</button>
+    <button class="cat-tab" data-cat="alert" onclick="filterCat(this,'alert')">⚠️ Safety Alert</button>
   </div>
-
-  <!-- GAME COMPLETE -->
-  <div id="gcs" class="screen off">
-    <div style="font-size:80px;margin-bottom:14px;">👑</div>
-    <div class="lc-t" style="font-size:30px;">축하해요!</div>
-    <div class="lc-t" style="font-size:24px;margin-bottom:14px;">모든 레벨 완성!</div>
-    <div style="font-size:52px;margin-bottom:22px;">🏆🎊🌟</div>
-    <div style="color:rgba(255,255,255,.9);font-size:18px;margin-bottom:30px;text-align:center;padding:0 20px;">레벨 50개를 모두 클리어했어요!<br>정말 대단해요!</div>
-    <button class="btn btn-p" onclick="restartAll()">🔄 다시 도전!</button>
-  </div>
-
 </div>
+
+<div id="main">
+  <div class="scroll-pad"></div>
+
+  <!-- FEED TAB -->
+  <div id="tab-feed" class="tab-content active">
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="searchInput" placeholder="Search neighbourhood notes…" oninput="renderNotes()">
+      </div>
+    </div>
+
+    <!-- WEATHER WIDGET -->
+    <div class="weather-card" id="weatherCard">
+      <div class="wx-left">
+        <div class="wx-icon" id="wxIcon">🌦️</div>
+        <div>
+          <div class="wx-temp"><span id="wxTemp">14</span><span class="wx-unit">°C</span></div>
+          <div class="wx-desc" id="wxDesc">Partly cloudy</div>
+        </div>
+      </div>
+      <div class="wx-right">
+        <div class="wx-loc" id="wxLoc">London, UK</div>
+        <div class="wx-detail" id="wxDetail">Humidity 72% · Wind 18 km/h</div>
+        <div class="wx-detail" id="wxDate"></div>
+      </div>
+    </div>
+
+    <!-- PINNED -->
+    <div class="pinned-banner" onclick="openNote(0)">
+      <div class="pin-icon">📌</div>
+      <div class="pin-text">
+        <div class="pin-title">📣 Council Notice: Bin Collection Changes</div>
+        <div class="pin-sub">Important update from Southwark Council · Pinned</div>
+      </div>
+      <div class="pin-arr">›</div>
+    </div>
+
+    <!-- NOTES LIST -->
+    <div class="section-hdr">
+      <h2>Latest Notes</h2>
+      <span id="notesCount">Loading…</span>
+    </div>
+    <div class="notes-list" id="notesList"></div>
+  </div>
+
+  <!-- ALERTS TAB -->
+  <div id="tab-alerts" class="tab-content">
+    <div class="scroll-pad" style="height:16px"></div>
+    <div class="alerts-section" id="alertsList"></div>
+  </div>
+
+  <!-- MAP TAB (placeholder) -->
+  <div id="tab-map" class="tab-content">
+    <div style="padding:60px 20px;text-align:center;">
+      <div style="font-size:64px;margin-bottom:16px;">🗺️</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px;">Neighbourhood Map</div>
+      <div style="font-size:14px;color:var(--sub);line-height:1.6;">Interactive map showing local notes and events in your postcode area.<br><br>Coming soon to WeNote UK.</div>
+    </div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div id="tab-profile" class="tab-content">
+    <div class="scroll-pad" style="height:16px"></div>
+    <div class="profile-section">
+      <div class="profile-card">
+        <div class="profile-top">
+          <div class="profile-avatar">JD</div>
+          <div class="profile-info">
+            <h3>Jane Davies</h3>
+            <p>📍 Southwark, London SE1</p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="pstat"><strong id="statPosts">0</strong><span>Posts</span></div>
+          <div class="pstat"><strong>47</strong><span>Neighbours</span></div>
+          <div class="pstat"><strong>128</strong><span>Likes Given</span></div>
+        </div>
+      </div>
+      <div class="settings-list">
+        <div class="setting-row" onclick="showToast('✏️ Edit profile — coming soon')">
+          <div class="setting-left"><span class="setting-icon">✏️</span><span class="setting-label">Edit Profile</span></div>
+          <div class="setting-right">›</div>
+        </div>
+        <div class="setting-row" onclick="showToast('📍 Postcode: SE1 7PB')">
+          <div class="setting-left"><span class="setting-icon">📍</span><span class="setting-label">My Postcode</span></div>
+          <div class="setting-right">SE1 7PB ›</div>
+        </div>
+        <div class="setting-row" onclick="showToast('🔔 Notification settings — coming soon')">
+          <div class="setting-left"><span class="setting-icon">🔔</span><span class="setting-label">Notifications</span></div>
+          <div class="setting-right">On ›</div>
+        </div>
+        <div class="setting-row" onclick="showToast('🔒 Privacy settings — coming soon')">
+          <div class="setting-left"><span class="setting-icon">🔒</span><span class="setting-label">Privacy</span></div>
+          <div class="setting-right">›</div>
+        </div>
+        <div class="setting-row" onclick="showToast('📋 Terms &amp; Conditions')">
+          <div class="setting-left"><span class="setting-icon">📋</span><span class="setting-label">Terms &amp; Conditions</span></div>
+          <div class="setting-right">›</div>
+        </div>
+        <div class="setting-row" onclick="showToast('ℹ️ WeNote UK v2.0 · © 2026 WeNote Ltd')">
+          <div class="setting-left"><span class="setting-icon">ℹ️</span><span class="setting-label">About WeNote UK</span></div>
+          <div class="setting-right">v2.0 ›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bottomNav">
+  <button class="nav-btn active" onclick="switchTab('feed')"><span class="nav-icon">🏡</span>Home</button>
+  <button class="nav-btn" onclick="switchTab('alerts')"><span class="nav-icon">🔔</span>Alerts</button>
+  <button class="nav-btn" onclick="switchTab('map')"><span class="nav-icon">🗺️</span>Map</button>
+  <button class="nav-btn" onclick="switchTab('profile')"><span class="nav-icon">👤</span>Profile</button>
+</nav>
+
+<!-- FAB -->
+<button id="fab" onclick="openCompose()">✏️</button>
+
+<!-- NOTE DETAIL MODAL -->
+<div class="modal-overlay" id="noteModal" onclick="closeNoteModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-inner" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- COMPOSE MODAL -->
+<div class="compose-overlay" id="composeModal" onclick="closeCompose(event)">
+  <div class="compose-sheet">
+    <div class="modal-handle"></div>
+    <div class="compose-hdr">
+      <h3>Post a Note</h3>
+      <button class="compose-close" onclick="closeCompose()">✕</button>
+    </div>
+    <div class="compose-form">
+      <div>
+        <div class="form-label">Category</div>
+        <div class="cat-picker" id="catPicker">
+          <button class="cat-pick-btn selected" data-c="announce" onclick="pickCat(this)">📣 Announcement</button>
+          <button class="cat-pick-btn" data-c="event" onclick="pickCat(this)">🎉 Event</button>
+          <button class="cat-pick-btn" data-c="lost" onclick="pickCat(this)">🔍 Lost &amp; Found</button>
+          <button class="cat-pick-btn" data-c="help" onclick="pickCat(this)">🙏 Help Needed</button>
+          <button class="cat-pick-btn" data-c="sale" onclick="pickCat(this)">🛒 For Sale / Free</button>
+          <button class="cat-pick-btn" data-c="alert" onclick="pickCat(this)">⚠️ Safety Alert</button>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">Title</div>
+        <input class="form-input" id="composeTitle" type="text" placeholder="What's your note about?" maxlength="80">
+      </div>
+      <div>
+        <div class="form-label">Message</div>
+        <textarea class="form-input" id="composeBody" placeholder="Share more details with your neighbours…" maxlength="500"></textarea>
+      </div>
+      <div>
+        <div class="form-label">Your Name / Display Name</div>
+        <input class="form-input" id="composeName" type="text" placeholder="e.g. Sarah from No.14" maxlength="40">
+      </div>
+      <button class="submit-btn" onclick="submitNote()">📤 Post to Neighbourhood</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
 <script>
 // ══════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════
-const C={
-  R:{h:'#E3000B',d:'#A50008',n:'빨강'},
-  Y:{h:'#FFD700',d:'#C4A200',n:'노랑'},
-  B:{h:'#006DB7',d:'#004F87',n:'파랑'},
-  G:{h:'#00A650',d:'#007A3A',n:'초록'},
-  O:{h:'#FF8C00',d:'#C46A00',n:'주황'},
-  W:{h:'#F0F0F0',d:'#C0C0C0',n:'하양'},
-  K:{h:'#3A3A3A',d:'#1A1A1A',n:'검정'},
-  P:{h:'#FF69B4',d:'#CC4490',n:'분홍'},
-  V:{h:'#00C4D4',d:'#008C9E',n:'하늘'},
-  M:{h:'#9B4DCA',d:'#6B3490',n:'보라'},
-  T:{h:'#C8960C',d:'#9A7009',n:'갈색'},
+const CATS={
+  announce:{label:'Announcement',icon:'📣',bg:'c-announce',cc:'cc-announce'},
+  event:   {label:'Event',       icon:'🎉',bg:'c-event',   cc:'cc-event'},
+  lost:    {label:'Lost & Found',icon:'🔍',bg:'c-lost',    cc:'cc-lost'},
+  help:    {label:'Help Needed', icon:'🙏',bg:'c-help',    cc:'cc-help'},
+  sale:    {label:'For Sale / Free',icon:'🛒',bg:'c-sale', cc:'cc-sale'},
+  alert:   {label:'Safety Alert',icon:'⚠️',bg:'c-alert',  cc:'cc-alert'},
 };
 
-const LV=[
-  // 1-5 매우쉬움
-  {n:"빨간 탑 🏠",e:"🟥",r:{R:4},t:9},
-  {n:"노란 길 🌟",e:"🟡",r:{Y:4},t:9},
-  {n:"파란 바다 🌊",e:"🔵",r:{B:4},t:9},
-  {n:"초록 풀밭 🌿",e:"🟩",r:{G:4},t:9},
-  {n:"알록달록 벽 🌈",e:"🌈",r:{R:2,Y:2},t:11},
-  // 6-10 쉬움
-  {n:"작은 집 🏠",e:"🏠",r:{R:3,Y:3},t:13},
-  {n:"귀여운 성 🏰",e:"🏰",r:{B:3,W:3},t:13},
-  {n:"커다란 나무 🌳",e:"🌳",r:{G:4,T:2},t:13},
-  {n:"예쁜 꽃 🌸",e:"🌸",r:{P:4,G:2},t:13},
-  {n:"빨간 자동차 🚗",e:"🚗",r:{R:4,K:2},t:15},
-  // 11-15 보통
-  {n:"친절한 로봇 🤖",e:"🤖",r:{B:4,G:2,W:2},t:17},
-  {n:"칙칙폭폭 기차 🚂",e:"🚂",r:{R:3,K:3,Y:2},t:17},
-  {n:"돛단배 ⛵",e:"⛵",r:{B:4,W:3,R:2},t:17},
-  {n:"하늘 비행기 ✈️",e:"✈️",r:{W:4,B:3,G:2},t:19},
-  {n:"반짝 별 ⭐",e:"⭐",r:{Y:5,O:3},t:19},
-  // 16-20
-  {n:"사랑 하트 ❤️",e:"❤️",r:{R:6,P:2},t:19},
-  {n:"우리 집 🏡",e:"🏡",r:{R:4,Y:3,B:2,G:2},t:22},
-  {n:"야옹 고양이 🐱",e:"🐱",r:{O:5,W:3,K:2},t:22},
-  {n:"멍멍 강아지 🐶",e:"🐶",r:{T:5,W:3,K:2},t:22},
-  {n:"생일 케이크 🎂",e:"🎂",r:{P:4,Y:3,W:3},t:24},
-  // 21-25 중간
-  {n:"웅장한 성 🏰",e:"🏰",r:{B:5,W:4,K:3,G:2},t:26},
-  {n:"브라키오사우루스 🦕",e:"🦕",r:{G:6,Y:4,W:2,K:2},t:26},
-  {n:"우주 로켓 🚀",e:"🚀",r:{R:5,B:4,W:3,Y:3},t:28},
-  {n:"신비한 용 🐲",e:"🐲",r:{G:5,R:4,Y:4,K:2},t:28},
-  {n:"맛있는 피자 🍕",e:"🍕",r:{Y:5,R:4,G:3,W:3},t:30},
-  // 26-30
-  {n:"무지개 다리 🌈",e:"🌈",r:{R:3,O:3,Y:3,G:3,B:3},t:30},
-  {n:"뒤뚱 펭귄 🐧",e:"🐧",r:{K:5,W:4,O:3,B:2},t:30},
-  {n:"빨간 트럭 🚛",e:"🚛",r:{R:5,K:4,B:3,W:3},t:32},
-  {n:"닌자 성 ⛩️",e:"⛩️",r:{R:5,K:5,W:4,G:2},t:32},
-  {n:"비행 우주선 🛸",e:"🛸",r:{B:5,V:4,W:3,K:4},t:34},
-  // 31-35 어려움
-  {n:"공룡 섬 🏝️",e:"🏝️",r:{G:6,Y:5,B:4,R:3,K:2},t:36},
-  {n:"마법사 탑 🧙",e:"🧙",r:{M:5,B:4,W:4,Y:3,K:3},t:36},
-  {n:"인어공주 🧜",e:"🧜",r:{V:5,P:4,Y:4,G:3,B:3},t:38},
-  {n:"바이킹 배 ⚓",e:"⚓",r:{T:5,R:4,B:4,W:4,K:4},t:38},
-  {n:"미래 도시 🏙️",e:"🏙️",r:{B:5,V:5,W:4,K:4,G:3},t:40},
-  // 36-40
-  {n:"신비한 정글 🌿",e:"🌿",r:{G:6,Y:4,R:4,T:4,O:3},t:40},
-  {n:"심해 왕국 🌊",e:"🌊",r:{B:6,V:5,G:4,P:3,W:3},t:42},
-  {n:"불꽃 화산 🌋",e:"🌋",r:{R:6,O:5,K:5,G:4,Y:3},t:42},
-  {n:"얼음 요새 ❄️",e:"❄️",r:{W:6,V:5,B:5,K:3,G:3},t:44},
-  {n:"황금 신전 🏛️",e:"🏛️",r:{Y:7,O:5,T:4,W:4,R:3},t:44},
-  // 41-45 매우어려움
-  {n:"마법 왕국 🏰",e:"🏰",r:{M:6,B:5,G:5,Y:4,W:4,R:3},t:46},
-  {n:"사이버 로봇 🤖",e:"🤖",r:{V:6,B:5,K:5,W:4,G:4,R:3},t:48},
-  {n:"레인보우 타워 🌈",e:"🌈",r:{R:4,O:4,Y:4,G:4,B:4,M:4},t:48},
-  {n:"우주 정거장 🛰️",e:"🛰️",r:{B:6,W:6,K:5,V:4,R:4,Y:3},t:50},
-  {n:"드래곤 성 🐉",e:"🐉",r:{R:6,G:5,Y:5,K:5,O:4,B:3},t:50},
-  // 46-50 최고난이도
-  {n:"마법의 숲 🌲",e:"🌲",r:{G:7,Y:5,T:5,R:4,W:3,O:4},t:52},
-  {n:"해적선 🏴‍☠️",e:"🏴‍☠️",r:{T:7,R:5,K:5,W:5,B:4,Y:4},t:52},
-  {n:"닌자 요새 🥷",e:"🥷",r:{K:7,R:6,W:5,B:4,G:4,Y:4},t:54},
-  {n:"외계인 기지 👽",e:"👽",r:{G:7,V:6,M:5,W:5,B:4,Y:4},t:54},
-  {n:"최후의 성 👑",e:"👑",r:{Y:7,R:6,B:6,G:5,W:5,K:5,M:4},t:56},
+let notes=[
+  {id:0,cat:'announce',pinned:true,
+   title:'Bin Collection Changes — Southwark Council',
+   body:'Please be aware that from Monday 30th June, general waste collections in SE1 will move from Tuesday to Wednesday. Recycling collections remain unchanged on Fridays. Please ensure bins are out by 07:00 on collection day. Contact the council on 020 7525 5000 for further information.',
+   author:'Council Liaison',avatar:'🏛️',avatarBg:'#003399',
+   time:'Today, 08:15',likes:34,liked:false,comments:8},
+  {id:1,cat:'event',pinned:false,
+   title:'Summer Street Party — Saturday 28th June',
+   body:'Join us for our annual summer street party on Bermondsey Street! Live music, food stalls, and fun for all the family from 12:00 to 20:00. Local bands, artisan food vendors, and a bouncy castle for the kids. Bring your own chairs and blankets!',
+   author:'The Bermondsey Collective',avatar:'🎊',avatarBg:'#15803D',
+   time:'Yesterday, 14:30',likes:62,liked:false,comments:15},
+  {id:2,cat:'lost',pinned:false,
+   title:'Lost: Tabby Cat — Answers to "Biscuit"',
+   body:'Our tabby cat Biscuit has been missing since Thursday evening. She was last seen near Leathermarket Gardens. She has a pale orange collar with a bell. Please ring or text 07700 900123 if you spot her. The children are heartbroken.',
+   author:'Davies Family',avatar:'🐱',avatarBg:'#A16207',
+   time:'Thu 19 Jun, 18:45',likes:41,liked:false,comments:12},
+  {id:3,cat:'help',pinned:false,
+   title:'Elderly Neighbour Needs a Hand with Shopping',
+   body:'My 82-year-old neighbour on Grange Walk needs help with her weekly shop. She's not very mobile and the online delivery slots are always taken. Would anyone be able to pop to Tesco for her on a Saturday? She would be so grateful.',
+   author:'Mark (No. 34)',avatar:'🤝',avatarBg:'#C2410C',
+   time:'Wed 18 Jun, 10:00',likes:29,liked:false,comments:5},
+  {id:4,cat:'sale',pinned:false,
+   title:'Free: Children\'s Bikes — Various Sizes',
+   body:'We're having a clear-out and have three children\'s bikes to give away — ages roughly 3–8. All are in reasonable condition. First come, first served. Pop round to 12 Grange Road any weekend morning before noon. No need to ring ahead.',
+   author:'The Thornton Family',avatar:'🚲',avatarBg:'#7E22CE',
+   time:'Tue 17 Jun, 16:20',likes:53,liked:false,comments:21},
+  {id:5,cat:'alert',pinned:false,
+   title:'Suspicious Activity on Long Lane Last Night',
+   body:'Several residents reported a group loitering near Long Lane car park between 23:00 and 01:00 on Tuesday. If you have CCTV or witnessed anything, please report to the Metropolitan Police on 101 (non-emergency) or 999 if you feel unsafe. Stay vigilant.',
+   author:'Neighbourhood Watch',avatar:'👮',avatarBg:'#BE123C',
+   time:'Wed 18 Jun, 07:00',likes:18,liked:false,comments:9},
+  {id:6,cat:'event',pinned:false,
+   title:'Community Garden Planting Day — Sunday 22nd June',
+   body:'Come and help plant out the new herb garden at Bermondsey Spa Gardens this Sunday from 10:00–13:00. Gloves and tools provided. Bring your family — children especially welcome! We\'ll have tea, coffee, and biscuits. All skill levels welcome.',
+   author:'Green Southwark',avatar:'🌿',avatarBg:'#15803D',
+   time:'Mon 16 Jun, 09:30',likes:37,liked:false,comments:7},
+  {id:7,cat:'announce',pinned:false,
+   title:'New Post Office Branch Opening — Monday 23rd June',
+   body:'We are delighted to announce that a new Post Office branch will open on Monday 23rd June inside the McColl\'s on Tower Bridge Road. Opening hours: Mon–Fri 08:00–18:00, Sat 09:00–17:00. Full range of postal and banking services available.',
+   author:'Local Business Network',avatar:'📮',avatarBg:'#003399',
+   time:'Mon 16 Jun, 11:00',likes:44,liked:false,comments:6},
+  {id:8,cat:'lost',pinned:false,
+   title:'Found: Brown Leather Wallet near Borough Market',
+   body:'Found a brown leather wallet near Borough Market this morning (Saturday). Contains cards and some cash — no ID visible. Please contact me via the app with a description to identify it. Happy to arrange return at a convenient time.',
+   author:'Anonymous Neighbour',avatar:'👜',avatarBg:'#A16207',
+   time:'Sat 14 Jun, 11:45',likes:22,liked:false,comments:3},
+  {id:9,cat:'help',pinned:false,
+   title:'Looking for a Reliable Plumber — Any Recommendations?',
+   body:'Our kitchen tap has been dripping for weeks and I\'ve been let down by two tradespeople already. Does anyone have a recommendation for a reliable, reasonably priced plumber in the SE1 area? Ideally someone local. Thank you!',
+   author:'Emma, Leathermarket St',avatar:'🔧',avatarBg:'#C2410C',
+   time:'Fri 13 Jun, 17:30',likes:11,liked:false,comments:14},
 ];
 
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let lvIdx=0,collected={},required={};
-let audioCtx=null;
-
-// ══════════════════════════════════════════════
-//  SCREENS
-// ══════════════════════════════════════════════
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.add('off'));
-  document.getElementById(id).classList.remove('off');
-}
-function goTitle(){show('ts');}
-
-// ══════════════════════════════════════════════
-//  AUDIO (Web Audio API)
-// ══════════════════════════════════════════════
-function ac(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-function beep(freq,dur,type='sine',vol=.18){
-  try{
-    const ctx=ac(),o=ctx.createOscillator(),g=ctx.createGain();
-    o.type=type;o.connect(g);g.connect(ctx.destination);
-    o.frequency.setValueAtTime(freq,ctx.currentTime);
-    g.gain.setValueAtTime(vol,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);
-    o.start(ctx.currentTime);o.stop(ctx.currentTime+dur);
-  }catch(e){}
-}
-function sndCollect(){beep(700+Math.random()*300,.14,'sine',.2);setTimeout(()=>beep(1000+Math.random()*200,.1,'sine',.15),60);}
-function sndWrong(){beep(180,.2,'sawtooth',.15);}
-function sndReady(){
-  [523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'sine',.25),i*120));
-}
-function sndComplete(){
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.3,'sine',.28),i*140));
-}
-
-// ══════════════════════════════════════════════
-//  GAME START / LEVEL LOAD
-// ══════════════════════════════════════════════
-function startGame(){
-  const saved=+localStorage.getItem('legoLvl')||0;
-  lvIdx=Math.min(saved,LV.length-1);
-  loadLevel();
-  show('gs');
-  const sub=document.getElementById('t-sub-txt');
-  if(saved>0) sub.textContent=`저장된 진행: 레벨 ${saved+1}부터!`;
-}
-
-function loadLevel(){
-  const lv=LV[lvIdx];
-  required={...lv.r};
-  collected={};
-  Object.keys(required).forEach(c=>collected[c]=0);
-
-  document.getElementById('lvl-txt').textContent=`레벨 ${lvIdx+1}`;
-  document.getElementById('lvl-ico').textContent=lv.e;
-  document.getElementById('lvl-fill').style.width=`${((lvIdx+1)/50)*100}%`;
-  document.getElementById('lvl-name').textContent=lv.n;
-
-  renderReqPanel();
-  hideBuildBtn();
-
-  const bf=document.getElementById('bf');
-  bf.querySelectorAll('.brick').forEach(b=>b.remove());
-
-  requestAnimationFrame(()=>generateBricks(lv));
-}
-
-// ══════════════════════════════════════════════
-//  REQUIRED PANEL
-// ══════════════════════════════════════════════
-function renderReqPanel(){
-  const panel=document.getElementById('req-panel');
-  panel.innerHTML='';
-  Object.entries(required).forEach(([c,cnt])=>{
-    const got=collected[c]||0;
-    const done=got>=cnt;
-    const col=C[c];
-    const el=document.createElement('div');
-    el.className=`req-item${done?' done':''}`;
-    el.id=`ri-${c}`;
-    el.innerHTML=`
-      <div class="rb" style="background:${col.h};box-shadow:0 4px 0 ${col.d};">
-        <div class="rb-stud" style="background:${col.h};box-shadow:0 -2px 0 ${col.d};left:4px;"></div>
-        <div class="rb-stud" style="background:${col.h};box-shadow:0 -2px 0 ${col.d};left:24px;"></div>
-      </div>
-      <div class="rc${done?' ok':''}" id="rc-${c}">${got}/${cnt}</div>
-    `;
-    panel.appendChild(el);
-  });
-}
-
-function updateReqItem(c){
-  const cnt=required[c];
-  const got=collected[c]||0;
-  const done=got>=cnt;
-  const el=document.getElementById(`ri-${c}`);
-  if(el){
-    el.className=`req-item${done?' done':''}`;
-    const rc=document.getElementById(`rc-${c}`);
-    if(rc){rc.textContent=`${got}/${cnt}`;rc.className=`rc${done?' ok':''}`;}
-  }
-}
-
-// ══════════════════════════════════════════════
-//  BRICK GENERATION
-// ══════════════════════════════════════════════
-function rnd(a,b){return a+Math.random()*(b-a);}
-function shuffle(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}
-  return a;
-}
-
-function generateBricks(lv){
-  const bf=document.getElementById('bf');
-  const W=bf.clientWidth||360;
-  const H=bf.clientHeight||400;
-
-  // Build pool: required bricks + distractors
-  let pool=[];
-  Object.entries(lv.r).forEach(([c,n])=>{for(let i=0;i<n;i++)pool.push(c);});
-
-  const extra=lv.t-pool.length;
-  const reqKeys=Object.keys(lv.r);
-  const distColors=Object.keys(C).filter(c=>!reqKeys.includes(c));
-  for(let i=0;i<extra;i++){
-    pool.push(distColors[0|Math.random()*distColors.length]);
-  }
-  pool=shuffle(pool);
-
-  const BW=54,BH=44;
-  const placed=[];
-
-  pool.forEach((c,idx)=>{
-    let x,y,tries=0;
-    do{
-      x=rnd(8,W-BW-8);
-      y=rnd(16,H-BH-80);
-      tries++;
-    }while(tries<40&&placed.some(p=>Math.abs(p.x-x)<BW*.7&&Math.abs(p.y-y)<BH*.7));
-    placed.push({x,y});
-
-    const rot=rnd(-22,22);
-    const col=C[c];
-
-    const brick=document.createElement('div');
-    brick.className='brick';
-    brick.dataset.c=c;
-    brick.style.cssText=`left:${x}px;top:${y}px;--r:${rot}deg;transform:rotate(${rot}deg) scale(0);z-index:${1+(0|Math.random()*4)};transition:transform .4s cubic-bezier(.34,1.56,.64,1) ${idx*35}ms,opacity .3s ${idx*35}ms;opacity:0;`;
-    brick.innerHTML=`
-      <div class="brick-body" style="width:${BW}px;height:30px;background:${col.h};--dark:${col.d};">
-        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:7px;"></div>
-        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:27px;"></div>
-        <div class="stud" style="background:${col.h};--dark:${col.d};width:14px;height:8px;left:${BW-21}px;"></div>
-      </div>
-    `;
-
-    const tap=()=>collectBrick(brick);
-    brick.addEventListener('pointerdown',tap);
-
-    bf.appendChild(brick);
-    requestAnimationFrame(()=>{
-      brick.style.transform=`rotate(${rot}deg) scale(1)`;
-      brick.style.opacity='1';
-    });
-  });
-}
-
-// ══════════════════════════════════════════════
-//  COLLECT LOGIC
-// ══════════════════════════════════════════════
-function collectBrick(brick){
-  if(brick.classList.contains('popping')||brick.classList.contains('shaking'))return;
-
-  const c=brick.dataset.c;
-  const isReq=required.hasOwnProperty(c);
-  const stillNeed=isReq&&(collected[c]||0)<required[c];
-
-  if(stillNeed){
-    collected[c]=(collected[c]||0)+1;
-    sndCollect();
-    spawnParticles(brick,c);
-    brick.classList.add('popping');
-    setTimeout(()=>brick.remove(),340);
-    updateReqItem(c);
-    checkDone();
-  } else {
-    // Wrong/extra — shake but still disappear after delay (fun for kids)
-    sndWrong();
-    brick.classList.add('shaking');
-    setTimeout(()=>{
-      brick.classList.remove('shaking');
-      brick.style.transition='opacity .4s';
-      brick.style.opacity='.3';
-    },380);
-    // Show hint if required color already done
-    if(isReq){
-      const hint=document.getElementById('hint');
-      hint.classList.add('show');
-      setTimeout(()=>hint.classList.remove('show'),1400);
-    }
-  }
-}
-
-function checkDone(){
-  const all=Object.keys(required).every(c=>(collected[c]||0)>=required[c]);
-  if(all){
-    showBuildBtn();
-    sndReady();
-  }
-}
-
-// ══════════════════════════════════════════════
-//  BUILD BUTTON
-// ══════════════════════════════════════════════
-function showBuildBtn(){document.getElementById('build-btn').classList.add('show');}
-function hideBuildBtn(){document.getElementById('build-btn').classList.remove('show');}
-
-function triggerBuild(){
-  hideBuildBtn();
-  // Scatter remaining bricks off-screen
-  document.getElementById('bf').querySelectorAll('.brick').forEach((b,i)=>{
-    const dx=(Math.random()-.5)*500;
-    const dy=-300-Math.random()*300;
-    setTimeout(()=>{
-      b.style.transition='transform .5s ease,opacity .5s';
-      b.style.transform=`translate(${dx}px,${dy}px) rotate(${(Math.random()-.5)*360}deg) scale(0)`;
-      b.style.opacity='0';
-    },i*25);
-  });
-  setTimeout(showLevelComplete,700);
-}
-
-// ══════════════════════════════════════════════
-//  LEVEL COMPLETE
-// ══════════════════════════════════════════════
-function showLevelComplete(){
-  const lv=LV[lvIdx];
-  document.getElementById('lc-ico').textContent=lv.e;
-  document.getElementById('lc-sub').textContent=`레벨 ${lvIdx+1} 클리어! ${lv.n}`;
-  document.getElementById('lc-stars').textContent='⭐⭐⭐';
-
-  const nb=document.getElementById('next-btn');
-  if(lvIdx>=49){nb.textContent='🏆 완전 완성!';nb.onclick=showGameComplete;}
-  else{nb.textContent='다음 레벨 ▶';nb.onclick=nextLevel;}
-
-  sndComplete();
-  confetti();
-  localStorage.setItem('legoLvl',Math.min(lvIdx+1,49).toString());
-  show('lcs');
-}
-
-function nextLevel(){
-  lvIdx++;
-  if(lvIdx>=50){showGameComplete();return;}
-  loadLevel();
-  show('gs');
-}
-
-function showGameComplete(){
-  confetti();setTimeout(confetti,600);
-  localStorage.setItem('legoLvl','0');
-  show('gcs');
-}
-
-function restartAll(){
-  lvIdx=0;localStorage.setItem('legoLvl','0');
-  loadLevel();show('gs');
-}
-
-// ══════════════════════════════════════════════
-//  EFFECTS
-// ══════════════════════════════════════════════
-function spawnParticles(brick,c){
-  const rect=brick.getBoundingClientRect();
-  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
-  const emojis=['✨','⭐','💥','🌟','🎉'];
-  for(let i=0;i<5;i++){
-    const p=document.createElement('div');
-    p.className='pt';
-    p.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*120}px;--dy:${-50-Math.random()*80}px;color:${C[c].h};`;
-    p.textContent=emojis[0|Math.random()*emojis.length];
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),1050);
-  }
-}
-
-function confetti(){
-  const cols=['#E3000B','#FFD700','#006DB7','#00A650','#FF8C00','#FF69B4','#9B4DCA','#00C4D4'];
-  for(let i=0;i<55;i++){
-    setTimeout(()=>{
-      const c=document.createElement('div');
-      c.className='cf';
-      const w=7+Math.random()*8,h=10+Math.random()*10;
-      c.style.cssText=`left:${Math.random()*100}vw;background:${cols[0|Math.random()*cols.length]};width:${w}px;height:${h}px;animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*.4}s;border-radius:${Math.random()>.5?'50%':'2px'};`;
-      document.body.appendChild(c);
-      setTimeout(()=>c.remove(),3200);
-    },i*28);
-  }
-}
+let activeCat='all';
+let selectedCat='announce';
+let openNoteId=null;
 
 // ══════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════
 window.addEventListener('load',()=>{
-  const saved=+localStorage.getItem('legoLvl')||0;
-  if(saved>0){
-    document.getElementById('t-sub-txt').textContent=`레벨 ${saved+1}부터 계속하기!`;
-  }
-  // Prevent scroll bounce on mobile
-  document.body.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+  setWeather();
+  setDate();
+  renderNotes();
+  renderAlerts();
+  document.getElementById('statPosts').textContent=
+    notes.filter(n=>n.author==='Jane Davies').length||0;
 });
+
+// ══════════════════════════════════════════════
+//  DATE / WEATHER
+// ══════════════════════════════════════════════
+function setDate(){
+  const d=new Date();
+  const opts={weekday:'long',day:'numeric',month:'long',year:'numeric'};
+  document.getElementById('wxDate').textContent=d.toLocaleDateString('en-GB',opts);
+}
+
+const wxData=[
+  {icon:'☀️',temp:19,desc:'Sunny intervals',humidity:58,wind:12},
+  {icon:'🌦️',temp:14,desc:'Partly cloudy',humidity:72,wind:18},
+  {icon:'🌧️',temp:11,desc:'Light rain',humidity:85,wind:22},
+  {icon:'⛅',temp:16,desc:'Overcast',humidity:65,wind:15},
+  {icon:'🌤️',temp:17,desc:'Mostly sunny',humidity:60,wind:10},
+];
+function setWeather(){
+  const w=wxData[0|Math.random()*wxData.length];
+  document.getElementById('wxIcon').textContent=w.icon;
+  document.getElementById('wxTemp').textContent=w.temp;
+  document.getElementById('wxDesc').textContent=w.desc;
+  document.getElementById('wxDetail').textContent=`Humidity ${w.humidity}% · Wind ${w.wind} km/h`;
+}
+
+// ══════════════════════════════════════════════
+//  FILTER / RENDER
+// ══════════════════════════════════════════════
+function filterCat(btn,cat){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat=cat;
+  renderNotes();
+}
+
+function renderNotes(){
+  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
+  let filtered=notes.filter(n=>{
+    if(activeCat!=='all'&&n.cat!==activeCat)return false;
+    if(q&&!n.title.toLowerCase().includes(q)&&!n.body.toLowerCase().includes(q))return false;
+    return true;
+  });
+  // Pinned first
+  filtered.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+
+  const list=document.getElementById('notesList');
+  document.getElementById('notesCount').textContent=`${filtered.length} note${filtered.length!==1?'s':''}`;
+
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No notes found</div><div class="empty-sub">Be the first to post in this category!</div></div>`;
+    return;
+  }
+
+  list.innerHTML=filtered.map(n=>{
+    const c=CATS[n.cat];
+    return `<div class="note-card${n.pinned?' pinned':''}" onclick="openNote(${n.id})">
+      <div class="note-top">
+        <div class="cat-badge ${c.bg}">${c.icon}</div>
+        <div class="note-meta">
+          <div class="note-cat-label ${c.cc}">${c.label}</div>
+          <div class="note-time">${n.time}${n.pinned?' · 📌 Pinned':''}</div>
+        </div>
+      </div>
+      <div class="note-title">${n.title}</div>
+      <div class="note-body">${n.body}</div>
+      <div class="note-footer">
+        <div class="note-author">
+          <div class="author-avatar" style="background:${n.avatarBg}">${n.avatar}</div>
+          <span class="author-name">${n.author}</span>
+        </div>
+        <div class="note-actions">
+          <button class="action-btn${n.liked?' liked':''}" onclick="toggleLike(event,${n.id})">
+            <span>${n.liked?'❤️':'🤍'}</span>${n.likes}
+          </button>
+          <button class="action-btn" onclick="event.stopPropagation()">
+            <span>💬</span>${n.comments}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  LIKES
+// ══════════════════════════════════════════════
+function toggleLike(e,id){
+  e.stopPropagation();
+  const n=notes.find(x=>x.id===id);
+  if(!n)return;
+  n.liked=!n.liked;
+  n.likes+=n.liked?1:-1;
+  renderNotes();
+  if(n.liked)showToast('❤️ You liked this note');
+}
+
+// ══════════════════════════════════════════════
+//  NOTE MODAL
+// ══════════════════════════════════════════════
+function openNote(id){
+  const n=notes.find(x=>x.id===id);
+  if(!n)return;
+  openNoteId=id;
+  const c=CATS[n.cat];
+  document.getElementById('modalContent').innerHTML=`
+    <div class="modal-cat-badge ${c.bg}">${c.icon}</div>
+    <div class="modal-cat-label ${c.cc}">${c.label}</div>
+    <div class="modal-title">${n.title}</div>
+    <div class="modal-body">${n.body}</div>
+    <div class="modal-meta-row">
+      <div class="meta-chip">🕐 ${n.time}</div>
+      <div class="meta-chip">✍️ ${n.author}</div>
+      <div class="meta-chip">💬 ${n.comments} comments</div>
+      ${n.pinned?'<div class="meta-chip">📌 Pinned</div>':''}
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-like" onclick="toggleLike(event,${n.id});updateModalLike(${n.id})">
+        ${n.liked?'❤️':'🤍'} ${n.likes} Likes
+      </button>
+      <button class="modal-btn modal-btn-share" onclick="shareNote(${n.id})">📤 Share</button>
+    </div>
+  `;
+  document.getElementById('noteModal').classList.add('open');
+}
+
+function updateModalLike(id){
+  const n=notes.find(x=>x.id===id);
+  if(!n)return;
+  const btn=document.querySelector('.modal-btn-like');
+  if(btn)btn.innerHTML=`${n.liked?'❤️':'🤍'} ${n.likes} Likes`;
+}
+
+function closeNoteModal(e){
+  if(!e||e.target===document.getElementById('noteModal'))
+    document.getElementById('noteModal').classList.remove('open');
+}
+
+function shareNote(id){
+  const n=notes.find(x=>x.id===id);
+  if(!n)return;
+  if(navigator.share){
+    navigator.share({title:n.title,text:n.body,url:window.location.href});
+  } else {
+    navigator.clipboard?.writeText(`${n.title}\n\n${n.body}\n\n— WeNote UK`);
+    showToast('📋 Copied to clipboard');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  COMPOSE
+// ══════════════════════════════════════════════
+function openCompose(){
+  document.getElementById('composeModal').classList.add('open');
+  document.getElementById('composeTitle').value='';
+  document.getElementById('composeBody').value='';
+  document.getElementById('composeName').value='';
+  document.querySelectorAll('.cat-pick-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelector('.cat-pick-btn[data-c="announce"]').classList.add('selected');
+  selectedCat='announce';
+}
+
+function closeCompose(e){
+  if(!e||e.target===document.getElementById('composeModal'))
+    document.getElementById('composeModal').classList.remove('open');
+}
+
+function pickCat(btn){
+  document.querySelectorAll('.cat-pick-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedCat=btn.dataset.c;
+}
+
+function submitNote(){
+  const title=document.getElementById('composeTitle').value.trim();
+  const body=document.getElementById('composeBody').value.trim();
+  const name=document.getElementById('composeName').value.trim()||'Anonymous Neighbour';
+  if(!title){showToast('⚠️ Please add a title');return;}
+  if(!body){showToast('⚠️ Please add a message');return;}
+
+  const now=new Date();
+  const timeStr=`Today, ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  const avatarEmojis={announce:'📣',event:'🎉',lost:'🔍',help:'🙏',sale:'🛒',alert:'⚠️'};
+  const avatarBgs={announce:'#003399',event:'#15803D',lost:'#A16207',help:'#C2410C',sale:'#7E22CE',alert:'#BE123C'};
+
+  const newNote={
+    id:Date.now(),cat:selectedCat,pinned:false,
+    title,body,author:name,
+    avatar:avatarEmojis[selectedCat],avatarBg:avatarBgs[selectedCat],
+    time:timeStr,likes:0,liked:false,comments:0,
+  };
+  notes.unshift(newNote);
+  document.getElementById('composeModal').classList.remove('open');
+  activeCat='all';
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.cat-tab[data-cat="all"]').classList.add('active');
+  renderNotes();
+  showToast('✅ Your note has been posted!');
+}
+
+// ══════════════════════════════════════════════
+//  ALERTS
+// ══════════════════════════════════════════════
+const alertData=[
+  {read:false,title:'New note in your area','body':'📣 Council notice about bin collections','time':'2 hours ago'},
+  {read:false,title:'Someone liked your post','body':'❤️ 3 neighbours liked your message','time':'5 hours ago'},
+  {read:true, title:'Weekly Summary','body':'📊 14 new notes in SE1 this week','time':'Yesterday'},
+  {read:true, title:'New event nearby','body':'🎉 Street Party this Saturday — 100m away','time':'2 days ago'},
+  {read:true, title:'Lost pet alert','body':'🐱 Lost cat reported on your street','time':'3 days ago'},
+];
+
+function renderAlerts(){
+  document.getElementById('alertsList').innerHTML=alertData.map(a=>`
+    <div class="alert-item" onclick="this.querySelector('.alert-dot').classList.add('read')">
+      <div class="alert-dot${a.read?' read':''}"></div>
+      <div class="alert-content">
+        <h4>${a.title}</h4>
+        <p>${a.body}</p>
+        <div class="alert-time">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map={feed:0,alerts:1,map:2,profile:3};
+  document.querySelectorAll('.nav-btn')[map[tab]]?.classList.add('active');
+  document.getElementById('fab').style.display=(tab==='feed')?'flex':'none';
+}
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══════════════════════════════════════════════
+//  PREVENT SCROLL BOUNCE
+// ══════════════════════════════════════════════
+document.addEventListener('touchmove',e=>{if(e.scale&&e.scale!==1)e.preventDefault();},{passive:false});
 </script>
 </body>
 </html>
