@@ -2,481 +2,758 @@
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#003399">
-<title>WeNote UK | Neighbourhood Board</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeNote UK | School Counselling System</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+*{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --navy:#003399;--red:#CC0000;--gold:#FFD700;
-  --bg:#F0F2F5;--card:#FFFFFF;--border:#E0E4EA;
-  --text:#1A1A2E;--sub:#6B7280;--accent:#003399;
-  --green:#16A34A;--orange:#EA580C;--purple:#7C3AED;
-  --pink:#DB2777;--teal:#0D9488;--yellow:#CA8A04;
-  --shadow:0 2px 12px rgba(0,51,153,.08);
-  --radius:16px;
+  --sidebar:#1A2E4A;--sidebar-active:#2563EB;--sidebar-text:#94A8C0;
+  --sidebar-hover:rgba(255,255,255,.08);--primary:#1565C0;--success:#16A34A;
+  --warning:#D97706;--danger:#DC2626;--bg:#F0F4F8;--card:#fff;
+  --border:#E2E8F0;--text:#1E293B;--sub:#64748B;--radius:12px;
+  --shadow:0 1px 4px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.04);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;}
 
-/* ── HEADER ── */
-#header{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:var(--navy);
-  padding:env(safe-area-inset-top,0) 0 0;
-}
-.hdr-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;}
-.hdr-brand{display:flex;align-items:center;gap:10px;}
-.hdr-logo{width:36px;height:36px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.hdr-title{color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;}
-.hdr-sub{color:rgba(255,255,255,.65);font-size:11px;margin-top:1px;}
-.hdr-right{display:flex;gap:8px;}
-.hdr-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;}
-.hdr-btn:active{background:rgba(255,255,255,.25);}
+/* SIDEBAR */
+#sidebar{width:230px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto;}
+.sb-brand{padding:18px 14px 14px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:3px;}
+.sb-icon{width:34px;height:34px;background:var(--sidebar-active);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.sb-title{color:#fff;font-size:15px;font-weight:800;letter-spacing:-.2px;}
+.sb-school{color:var(--sidebar-text);font-size:10.5px;padding-left:43px;margin-top:1px;}
+.sb-nav{flex:1;padding:10px 7px;}
+.nav-section-label{color:rgba(255,255,255,.28);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:8px 9px 3px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;color:var(--sidebar-text);cursor:pointer;transition:all .13s;font-size:13px;font-weight:500;margin-bottom:1px;}
+.nav-item:hover{background:var(--sidebar-hover);}
+.nav-item.active{background:var(--sidebar-active);color:#fff;}
+.nav-icon{font-size:15px;width:18px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--danger);color:#fff;border-radius:10px;font-size:9.5px;font-weight:700;padding:1px 5px;}
+.sb-footer{padding:10px 7px;border-top:1px solid rgba(255,255,255,.07);}
+.sb-user{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;}
+.sb-user:hover{background:var(--sidebar-hover);}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--sidebar-active);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.sb-uname{color:#fff;font-size:12.5px;font-weight:600;}
+.sb-urole{color:var(--sidebar-text);font-size:10.5px;}
 
-/* ── CATEGORY TABS ── */
-#cats{
-  background:var(--navy);
-  padding:0 12px 12px;
-  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-}
-#cats::-webkit-scrollbar{display:none;}
-.cat-tab{
-  flex-shrink:0;background:rgba(255,255,255,.15);border:none;color:rgba(255,255,255,.8);
-  border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;
-  transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px;
-}
-.cat-tab.active{background:#fff;color:var(--navy);}
-.cat-tab:active{transform:scale(.95);}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+#topbar{background:#fff;border-bottom:1.5px solid var(--border);padding:0 22px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tb-left h1{font-size:17px;font-weight:700;}
+.tb-left p{font-size:12px;color:var(--sub);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.tb-btn{background:var(--primary);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.tb-btn:hover{opacity:.88;}
+.tb-btn.sec{background:var(--bg);color:var(--text);border:1.5px solid var(--border);}
+.tb-date{font-size:12px;color:var(--sub);font-weight:500;margin-right:6px;}
 
-/* ── MAIN SCROLL ── */
-#main{margin-top:0;padding-bottom:90px;}
-.scroll-pad{height:112px;}
+#content{flex:1;overflow-y:auto;padding:22px;}
+#content::-webkit-scrollbar{width:5px;}
+#content::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ── SEARCH BAR ── */
-.search-wrap{padding:12px 14px;position:sticky;top:112px;z-index:50;background:var(--bg);}
-.search-box{
-  display:flex;align-items:center;gap:10px;
-  background:#fff;border-radius:14px;padding:10px 14px;
-  box-shadow:var(--shadow);border:1.5px solid var(--border);
-}
-.search-box input{
-  flex:1;border:none;outline:none;font-size:15px;color:var(--text);background:transparent;
-}
-.search-box input::placeholder{color:var(--sub);}
-.search-icon{font-size:18px;color:var(--sub);}
+.screen{display:none;}
+.screen.active{display:block;}
 
-/* ── PINNED BANNER ── */
-.pinned-banner{
-  margin:0 14px 12px;
-  background:linear-gradient(135deg,#003399,#0055CC);
-  border-radius:var(--radius);padding:14px 16px;
-  display:flex;align-items:center;gap:12px;cursor:pointer;
-  box-shadow:0 4px 16px rgba(0,51,153,.25);
-}
-.pin-icon{font-size:28px;}
-.pin-text{flex:1;}
-.pin-title{color:#fff;font-size:15px;font-weight:700;}
-.pin-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:2px;}
-.pin-arr{color:rgba(255,255,255,.6);font-size:20px;}
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);border:1.5px solid var(--border);}
+.stat-label{font-size:11px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.stat-value{font-size:26px;font-weight:800;line-height:1;}
+.stat-change{font-size:11px;color:var(--success);margin-top:4px;font-weight:500;}
+.stat-change.neg{color:var(--warning);}
 
-/* ── SECTION HEADER ── */
-.section-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;margin:4px 0 10px;
-}
-.section-hdr h2{font-size:17px;font-weight:700;color:var(--text);}
-.section-hdr span{font-size:13px;color:var(--sub);}
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);border:1.5px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden;}
+.card-header{padding:14px 18px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:700;}
+.card-action{font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;}
+.card-body{padding:18px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 
-/* ── NOTE CARD ── */
-.notes-list{padding:0 14px;display:flex;flex-direction:column;gap:12px;}
-.note-card{
-  background:#fff;border-radius:var(--radius);padding:16px;
-  box-shadow:var(--shadow);border:1.5px solid var(--border);
-  cursor:pointer;transition:transform .15s,box-shadow .15s;
-  position:relative;overflow:hidden;
-}
-.note-card:active{transform:scale(.985);box-shadow:0 1px 6px rgba(0,51,153,.06);}
-.note-card.pinned::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--gold),#FFA500);
-}
-.note-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
-.cat-badge{
-  flex-shrink:0;width:40px;height:40px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-}
-.note-meta{flex:1;}
-.note-cat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
-.note-time{font-size:12px;color:var(--sub);}
-.note-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.35;}
-.note-body{font-size:14px;color:#4B5563;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.note-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
-.note-author{display:flex;align-items:center;gap:6px;}
-.author-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
-.author-name{font-size:13px;color:var(--sub);font-weight:500;}
-.note-actions{display:flex;align-items:center;gap:12px;}
-.action-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--sub);padding:4px 6px;border-radius:8px;transition:all .15s;}
-.action-btn:active{background:var(--bg);transform:scale(.9);}
-.action-btn.liked{color:var(--red);}
-.action-btn span{font-size:15px;}
+/* SESSION ITEMS */
+.session-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.session-item:last-child{border-bottom:none;}
+.sess-time{font-size:11.5px;color:var(--sub);font-weight:500;min-width:40px;}
+.sess-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.sess-info{flex:1;}
+.sess-name{font-size:13.5px;font-weight:600;}
+.sess-meta{font-size:11.5px;color:var(--sub);margin-top:1px;}
+.risk-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;}
+.risk-none{background:#F0FDF4;color:#166534;}
+.risk-low{background:#FFFBEB;color:#92400E;}
+.risk-medium{background:#FFF7ED;color:#9A3412;}
+.risk-high{background:#FEF2F2;color:#991B1B;}
 
-/* ── WEATHER WIDGET ── */
-.weather-card{
-  margin:0 14px 16px;background:#fff;border-radius:var(--radius);
-  padding:14px 16px;box-shadow:var(--shadow);border:1.5px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.wx-left{display:flex;align-items:center;gap:10px;}
-.wx-icon{font-size:36px;}
-.wx-temp{font-size:28px;font-weight:800;color:var(--navy);}
-.wx-unit{font-size:16px;color:var(--sub);font-weight:500;}
-.wx-desc{font-size:13px;color:var(--sub);margin-top:2px;}
-.wx-loc{font-size:13px;font-weight:600;color:var(--text);}
-.wx-right{text-align:right;}
-.wx-detail{font-size:12px;color:var(--sub);margin-top:3px;}
+/* ACTIVITY */
+.activity-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:4px;}
+.activity-text{flex:1;}
+.activity-time{color:var(--sub);font-size:11px;}
 
-/* ── BOTTOM NAV ── */
-#bottomNav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:#fff;border-top:1.5px solid var(--border);
-  display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);
-  z-index:100;box-shadow:0 -2px 16px rgba(0,0,0,.06);
-}
-.nav-btn{
-  flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;
-  gap:3px;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;padding:4px 0;
-  transition:color .15s;
-}
-.nav-btn.active{color:var(--navy);}
-.nav-btn .nav-icon{font-size:22px;transition:transform .15s;}
-.nav-btn.active .nav-icon{transform:scale(1.1);}
+/* SAFEGUARD BANNER */
+.safeguard-banner{background:#FEF2F2;border:1.5px solid #FECACA;border-radius:var(--radius);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.safeguard-text strong{font-size:13px;font-weight:700;color:#991B1B;display:block;}
+.safeguard-text p{font-size:11.5px;color:#B91C1C;}
+.sb-action-btn{margin-left:auto;background:var(--danger);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
 
-/* ── FAB ── */
-#fab{
-  position:fixed;bottom:80px;right:18px;
-  width:58px;height:58px;border-radius:50%;
-  background:linear-gradient(135deg,#CC0000,#FF3333);
-  border:none;color:#fff;font-size:28px;cursor:pointer;
-  box-shadow:0 4px 18px rgba(204,0,0,.4);
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .2s,box-shadow .2s;z-index:99;
-}
-#fab:active{transform:scale(.9);box-shadow:0 2px 10px rgba(204,0,0,.3);}
+/* STUDENT TABLE */
+.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:9px;padding:8px 13px;margin-bottom:13px;box-shadow:var(--shadow);}
+.search-bar input{flex:1;border:none;outline:none;font-size:13.5px;color:var(--text);}
+.search-bar input::placeholder{color:var(--sub);}
+.filter-row{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-btn{padding:4px 11px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:11.5px;font-weight:600;color:var(--sub);cursor:pointer;transition:all .13s;}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.student-table{width:100%;border-collapse:collapse;}
+.student-table th{text-align:left;padding:9px 13px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--sub);border-bottom:2px solid var(--border);background:#FAFBFC;}
+.student-table td{padding:11px 13px;border-bottom:1px solid var(--border);font-size:13px;}
+.student-table tr:last-child td{border-bottom:none;}
+.student-table tr:hover td{background:#F8FAFF;cursor:pointer;}
+.stu-name{font-weight:600;}
+.year-badge{display:inline-block;padding:1px 7px;border-radius:10px;background:#EFF6FF;color:#1E40AF;font-size:10.5px;font-weight:700;}
+.gdpr-tag{display:inline-block;padding:1px 7px;border-radius:10px;background:#F0FDF4;color:#166534;font-size:10px;font-weight:600;}
 
-/* ── MODAL ── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px;}
+.form-input{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;color:var(--text);outline:none;transition:border-color .13s;font-family:inherit;background:#fff;}
+.form-input:focus{border-color:var(--primary);}
+textarea.form-input{resize:vertical;min-height:90px;}
+select.form-input{cursor:pointer;}
+.form-row{display:flex;gap:12px;}
+.form-row .form-group{flex:1;}
+
+/* CHECKBOXES */
+.check-group{display:flex;flex-wrap:wrap;gap:7px;}
+.check-item{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;cursor:pointer;transition:all .13s;user-select:none;}
+.check-item.checked{background:#EFF6FF;border-color:var(--primary);color:var(--primary);}
+
+/* RISK SELECTOR */
+.risk-row{display:flex;gap:8px;}
+.risk-opt{flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:11.5px;font-weight:700;transition:all .13s;}
+.risk-opt.sel-none{border-color:#16A34A;background:#F0FDF4;color:#166534;}
+.risk-opt.sel-low{border-color:#D97706;background:#FFFBEB;color:#92400E;}
+.risk-opt.sel-med{border-color:#EA580C;background:#FFF7ED;color:#9A3412;}
+.risk-opt.sel-high{border-color:#DC2626;background:#FEF2F2;color:#991B1B;}
+
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month{font-size:17px;font-weight:700;}
+.cal-nav-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:7px;width:32px;height:32px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-day-hdr{text-align:center;font-size:10.5px;font-weight:700;color:var(--sub);padding:6px 0;}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:12.5px;font-weight:500;position:relative;transition:background .1s;}
+.cal-day:hover{background:var(--bg);}
+.cal-day.today{background:var(--primary);color:#fff;font-weight:700;}
+.cal-day.has-session::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--success);}
+.cal-day.today.has-session::after{background:#fff;}
+.cal-day.other-month{color:#CBD5E1;}
+.cal-day.selected{background:#EFF6FF;color:var(--primary);font-weight:700;}
+.privacy-toggle{display:flex;align-items:center;gap:7px;background:#FEF9C3;border-radius:8px;padding:7px 11px;margin-bottom:14px;font-size:12.5px;font-weight:600;color:#92400E;cursor:pointer;border:1px solid #FDE68A;user-select:none;}
+
+/* CHARTS */
+.chart-bar-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.chart-label{font-size:11.5px;width:120px;color:var(--sub);font-weight:500;flex-shrink:0;}
+.chart-bar-wrap{flex:1;background:var(--bg);border-radius:4px;height:18px;overflow:hidden;}
+.chart-bar{height:100%;border-radius:4px;background:var(--primary);transition:width .6s;}
+.chart-value{font-size:12px;font-weight:700;min-width:24px;text-align:right;}
+
+/* ASSESSMENT */
+.assess-q{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.assess-q:last-child{border-bottom:none;}
+.assess-text{flex:1;font-size:12.5px;line-height:1.5;}
+.assess-opts{display:flex;gap:5px;flex-shrink:0;}
+.assess-opt{padding:3px 9px;border-radius:6px;border:1.5px solid var(--border);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .13s;color:var(--sub);background:#fff;}
+.assess-opt.selected{background:var(--primary);color:#fff;border-color:var(--primary);}
+.score-panel{background:var(--bg);border-radius:9px;padding:14px 16px;margin-top:14px;text-align:center;}
+.score-big{font-size:36px;font-weight:800;}
+.score-label{font-size:13px;color:var(--sub);margin-top:2px;}
+
+/* DOC CARDS */
+.doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.doc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .13s;text-align:center;}
+.doc-card:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,101,192,.1);}
+.doc-icon{font-size:34px;margin-bottom:8px;}
+.doc-title{font-size:12.5px;font-weight:700;margin-bottom:3px;}
+.doc-desc{font-size:11px;color:var(--sub);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal-sheet{
-  background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;
-  max-height:90vh;overflow-y:auto;
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.24,1);
-  padding-bottom:env(safe-area-inset-bottom,20px);
-}
-.modal-overlay.open .modal-sheet{transform:translateY(0);}
-.modal-handle{width:36px;height:4px;background:#E0E4EA;border-radius:2px;margin:12px auto 16px;}
-.modal-inner{padding:0 20px 20px;}
-.modal-cat-badge{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px;}
-.modal-cat-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.modal-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;line-height:1.3;}
-.modal-body{font-size:15px;color:#374151;line-height:1.65;margin-bottom:16px;}
-.modal-meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-.meta-chip{background:var(--bg);border-radius:20px;padding:5px 12px;font-size:13px;color:var(--sub);font-weight:500;}
-.modal-actions{display:flex;gap:10px;}
-.modal-btn{flex:1;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;}
-.modal-btn:active{transform:scale(.97);}
-.modal-btn-like{background:linear-gradient(135deg,#CC0000,#FF3333);color:#fff;}
-.modal-btn-share{background:var(--bg);color:var(--text);}
+.modal-box{background:#fff;border-radius:14px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;transform:scale(.95);transition:transform .2s;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-overlay.open .modal-box{transform:scale(1);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:1;}
+.modal-hdr h3{font-size:15px;font-weight:700;}
+.modal-close{background:var(--bg);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:15px;}
+.modal-body{padding:18px 22px;}
+.modal-footer{padding:14px 22px;border-top:1.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.btn{padding:8px 18px;border-radius:7px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .13s;}
+.btn:hover{opacity:.84;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-sec{background:var(--bg);color:var(--text);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-success{background:var(--success);color:#fff;}
 
-/* ── COMPOSE ── */
-.compose-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
-.compose-overlay.open{opacity:1;pointer-events:all;}
-.compose-sheet{
-  background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;
-  max-height:95vh;overflow-y:auto;
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.24,1);
-  padding-bottom:env(safe-area-inset-bottom,20px);
-}
-.compose-overlay.open .compose-sheet{transform:translateY(0);}
-.compose-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
-.compose-hdr h3{font-size:18px;font-weight:800;}
-.compose-close{background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;}
-.compose-form{padding:0 20px 20px;display:flex;flex-direction:column;gap:14px;}
-.form-label{font-size:13px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
-.form-input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--text);outline:none;font-family:inherit;transition:border-color .15s;}
-.form-input:focus{border-color:var(--navy);}
-textarea.form-input{resize:none;height:110px;}
-.cat-picker{display:flex;flex-wrap:wrap;gap:8px;}
-.cat-pick-btn{
-  display:flex;align-items:center;gap:6px;padding:8px 14px;
-  border:1.5px solid var(--border);border-radius:20px;background:#fff;
-  font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text);
-}
-.cat-pick-btn.selected{border-color:var(--navy);background:var(--navy);color:#fff;}
-.cat-pick-btn:active{transform:scale(.95);}
-.submit-btn{
-  width:100%;padding:15px;background:linear-gradient(135deg,var(--navy),#0055CC);
-  color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;
-  cursor:pointer;transition:all .15s;
-}
-.submit-btn:active{transform:scale(.98);}
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:500;background:#1E293B;color:#fff;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:500;transform:translateY(60px);opacity:0;transition:all .3s;min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+#toast.show{transform:translateY(0);opacity:1;}
 
-/* ── TOAST ── */
-#toast{
-  position:fixed;top:env(safe-area-inset-top,0);left:50%;transform:translateX(-50%) translateY(-80px);
-  background:#1A1A2E;color:#fff;border-radius:12px;padding:12px 20px;
-  font-size:14px;font-weight:600;z-index:500;transition:transform .3s cubic-bezier(.32,1,.24,1);
-  white-space:nowrap;max-width:90vw;text-align:center;
-}
-#toast.show{transform:translateX(-50%) translateY(calc(env(safe-area-inset-top,0) + 16px));}
+/* SETTINGS */
+.settings-section{margin-bottom:22px;}
+.settings-section h3{font-size:13.5px;font-weight:700;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--border);}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row label{font-size:13px;color:var(--sub);}
+.settings-row .form-input{max-width:260px;}
 
-/* ── EMPTY STATE ── */
-.empty-state{padding:40px 20px;text-align:center;}
-.empty-icon{font-size:56px;margin-bottom:12px;}
-.empty-title{font-size:18px;font-weight:700;margin-bottom:6px;}
-.empty-sub{font-size:14px;color:var(--sub);}
+/* STUDENT PROFILE */
+.profile-hdr{display:flex;gap:14px;align-items:flex-start;padding:18px;background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);margin-bottom:16px;}
+.profile-big-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;}
+.profile-name{font-size:18px;font-weight:800;}
+.profile-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.profile-tag{padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:600;background:var(--bg);color:var(--sub);}
 
-/* ── TAB CONTENT ── */
-.tab-content{display:none;}
-.tab-content.active{display:block;}
+/* SECTION DIVIDER */
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);margin-bottom:8px;margin-top:4px;}
 
-/* ── PROFILE TAB ── */
-.profile-section{padding:20px 14px;}
-.profile-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:14px;}
-.profile-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--navy),#0055CC);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:700;}
-.profile-info h3{font-size:18px;font-weight:800;}
-.profile-info p{font-size:13px;color:var(--sub);margin-top:2px;}
-.profile-stats{display:flex;gap:0;border-top:1.5px solid var(--border);padding-top:16px;}
-.pstat{flex:1;text-align:center;}
-.pstat strong{display:block;font-size:22px;font-weight:800;color:var(--navy);}
-.pstat span{font-size:12px;color:var(--sub);}
-.pstat+.pstat{border-left:1.5px solid var(--border);}
-.settings-list{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
-.setting-row:last-child{border-bottom:none;}
-.setting-row:active{background:var(--bg);}
-.setting-left{display:flex;align-items:center;gap:10px;}
-.setting-icon{font-size:20px;width:28px;text-align:center;}
-.setting-label{font-size:15px;font-weight:500;}
-.setting-right{color:var(--sub);font-size:15px;}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.info-item{background:var(--bg);border-radius:8px;padding:10px 12px;}
+.info-label{font-size:10.5px;color:var(--sub);font-weight:600;margin-bottom:2px;}
+.info-value{font-size:13px;font-weight:600;}
 
-/* ── ALERTS TAB ── */
-.alerts-section{padding:14px;}
-.alert-item{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:10px;display:flex;gap:12px;}
-.alert-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;}
-.alert-dot.read{background:var(--border);}
-.alert-content h4{font-size:14px;font-weight:700;margin-bottom:3px;}
-.alert-content p{font-size:13px;color:var(--sub);}
-.alert-time{font-size:11px;color:var(--sub);margin-top:4px;}
-
-/* Colour utilities */
-.c-announce{background:#EFF6FF;}.cc-announce{color:#1D4ED8;}
-.c-event{background:#F0FDF4;}.cc-event{color:#15803D;}
-.c-lost{background:#FEF9C3;}.cc-lost{color:#A16207;}
-.c-help{background:#FFF7ED;}.cc-help{color:#C2410C;}
-.c-sale{background:#FDF4FF;}.cc-sale{color:#7E22CE;}
-.c-alert{background:#FFF1F2;}.cc-alert{color:#BE123C;}
+/* BACK BTN */
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--primary);cursor:pointer;font-size:13px;font-weight:600;margin-bottom:14px;width:fit-content;}
+.back-btn:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div id="header">
-  <div class="hdr-inner">
-    <div class="hdr-brand">
-      <div class="hdr-logo">🇬🇧</div>
-      <div>
-        <div class="hdr-title">WeNote UK</div>
-        <div class="hdr-sub" id="hdrLocation">Your Neighbourhood Board</div>
-      </div>
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-icon">🧠</div>
+      <div class="sb-title">WeNote UK</div>
     </div>
-    <div class="hdr-right">
-      <button class="hdr-btn" onclick="showToast('🔔 No new notifications')">🔔</button>
-      <button class="hdr-btn" onclick="switchTab('profile')">👤</button>
-    </div>
+    <div class="sb-school" id="sbSchool">Southwark Academy</div>
   </div>
-  <div id="cats">
-    <button class="cat-tab active" data-cat="all" onclick="filterCat(this,'all')">🏡 All</button>
-    <button class="cat-tab" data-cat="announce" onclick="filterCat(this,'announce')">📣 Announcements</button>
-    <button class="cat-tab" data-cat="event" onclick="filterCat(this,'event')">🎉 Events</button>
-    <button class="cat-tab" data-cat="lost" onclick="filterCat(this,'lost')">🔍 Lost &amp; Found</button>
-    <button class="cat-tab" data-cat="help" onclick="filterCat(this,'help')">🙏 Help Needed</button>
-    <button class="cat-tab" data-cat="sale" onclick="filterCat(this,'sale')">🛒 For Sale / Free</button>
-    <button class="cat-tab" data-cat="alert" onclick="filterCat(this,'alert')">⚠️ Safety Alert</button>
+  <nav class="sb-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">🏠</span>Dashboard</div>
+    <div class="nav-item" onclick="nav('students',this)"><span class="nav-icon">👥</span>Students</div>
+    <div class="nav-item" onclick="nav('sessions',this)"><span class="nav-icon">📝</span>Session Log</div>
+    <div class="nav-item" onclick="nav('calendar',this)"><span class="nav-icon">📅</span>Calendar</div>
+    <div class="nav-section-label">Tools</div>
+    <div class="nav-item" onclick="nav('assessments',this)"><span class="nav-icon">📋</span>Assessments</div>
+    <div class="nav-item" onclick="nav('reports',this)"><span class="nav-icon">📊</span>Reports</div>
+    <div class="nav-item" onclick="nav('documents',this)"><span class="nav-icon">📄</span>Documents</div>
+    <div class="nav-section-label">System</div>
+    <div class="nav-item" onclick="nav('safeguarding',this)"><span class="nav-icon">🛡️</span>Safeguarding<span class="nav-badge" id="sfBadge">1</span></div>
+    <div class="nav-item" onclick="nav('settings',this)"><span class="nav-icon">⚙️</span>Settings</div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">SW</div>
+      <div><div class="sb-uname" id="sbUser">Ms S. Williams</div><div class="sb-urole">School Counsellor</div></div>
+    </div>
   </div>
 </div>
 
+<!-- MAIN -->
 <div id="main">
-  <div class="scroll-pad"></div>
-
-  <!-- FEED TAB -->
-  <div id="tab-feed" class="tab-content active">
-    <div class="search-wrap">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="searchInput" placeholder="Search neighbourhood notes…" oninput="renderNotes()">
-      </div>
+  <div id="topbar">
+    <div class="tb-left">
+      <h1 id="tbTitle">Dashboard</h1>
+      <p id="tbSub"></p>
     </div>
+    <div class="tb-right">
+      <span class="tb-date" id="tbDate"></span>
+      <button class="tb-btn sec" onclick="nav('calendar',null)">📅 Calendar</button>
+      <button class="tb-btn" onclick="openNewSession()">+ Log Session</button>
+    </div>
+  </div>
+  <div id="content">
 
-    <!-- WEATHER WIDGET -->
-    <div class="weather-card" id="weatherCard">
-      <div class="wx-left">
-        <div class="wx-icon" id="wxIcon">🌦️</div>
-        <div>
-          <div class="wx-temp"><span id="wxTemp">14</span><span class="wx-unit">°C</span></div>
-          <div class="wx-desc" id="wxDesc">Partly cloudy</div>
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div class="safeguard-banner" id="sfBanner">
+        <span style="font-size:20px">🛡️</span>
+        <div class="safeguard-text">
+          <strong>Safeguarding Action Required</strong>
+          <p>1 student flagged for urgent DSL referral — Ethan Davis (Y10)</p>
+        </div>
+        <button class="sb-action-btn" onclick="nav('safeguarding',null)">View Now</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Students <span>👥</span></div><div class="stat-value" id="statTotal">0</div><div class="stat-change">Registered this year</div></div>
+        <div class="stat-card"><div class="stat-label">Sessions Today <span>📝</span></div><div class="stat-value" id="statToday">3</div><div class="stat-change">2 remaining</div></div>
+        <div class="stat-card"><div class="stat-label">This Week <span>📆</span></div><div class="stat-value" id="statWeek">12</div><div class="stat-change">↑ 2 from last week</div></div>
+        <div class="stat-card"><div class="stat-label">This Month <span>📈</span></div><div class="stat-value" id="statMonth">47</div><div class="stat-change stat-change">On track</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Today's Appointments</span><span class="card-action" onclick="nav('calendar',null)">View calendar ›</span></div>
+          <div class="card-body" id="todaySessions"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Activity</span></div>
+          <div class="card-body" id="recentActivity"></div>
         </div>
       </div>
-      <div class="wx-right">
-        <div class="wx-loc" id="wxLoc">London, UK</div>
-        <div class="wx-detail" id="wxDetail">Humidity 72% · Wind 18 km/h</div>
-        <div class="wx-detail" id="wxDate"></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">High Risk Students</span><span class="card-action" onclick="nav('students',null)">View all ›</span></div>
+        <div class="card-body" id="highRiskList"></div>
       </div>
     </div>
 
-    <!-- PINNED -->
-    <div class="pinned-banner" onclick="openNote(0)">
-      <div class="pin-icon">📌</div>
-      <div class="pin-text">
-        <div class="pin-title">📣 Council Notice: Bin Collection Changes</div>
-        <div class="pin-sub">Important update from Southwark Council · Pinned</div>
+    <!-- STUDENTS -->
+    <div id="screen-students" class="screen">
+      <div id="studentListView">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div></div>
+          <button class="tb-btn" onclick="openAddStudent()">+ Add Student</button>
+        </div>
+        <div class="search-bar"><span>🔍</span><input type="text" id="stuSearch" placeholder="Search by name, year group, or form…" oninput="renderStudents()"></div>
+        <div class="filter-row" id="yearFilter">
+          <button class="filter-btn active" onclick="setYearFilter('all',this)">All</button>
+          <button class="filter-btn" onclick="setYearFilter('7',this)">Year 7</button>
+          <button class="filter-btn" onclick="setYearFilter('8',this)">Year 8</button>
+          <button class="filter-btn" onclick="setYearFilter('9',this)">Year 9</button>
+          <button class="filter-btn" onclick="setYearFilter('10',this)">Year 10</button>
+          <button class="filter-btn" onclick="setYearFilter('11',this)">Year 11</button>
+          <button class="filter-btn" onclick="setYearFilter('12',this)">Year 12</button>
+          <button class="filter-btn" onclick="setYearFilter('13',this)">Year 13</button>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <table class="student-table">
+            <thead><tr>
+              <th>Name</th><th>Year</th><th>Form</th><th>Last Session</th><th>Total Sessions</th><th>Risk Level</th><th>Status</th>
+            </tr></thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+        </div>
       </div>
-      <div class="pin-arr">›</div>
+      <div id="studentProfileView" style="display:none;"></div>
     </div>
 
-    <!-- NOTES LIST -->
-    <div class="section-hdr">
-      <h2>Latest Notes</h2>
-      <span id="notesCount">Loading…</span>
-    </div>
-    <div class="notes-list" id="notesList"></div>
-  </div>
-
-  <!-- ALERTS TAB -->
-  <div id="tab-alerts" class="tab-content">
-    <div class="scroll-pad" style="height:16px"></div>
-    <div class="alerts-section" id="alertsList"></div>
-  </div>
-
-  <!-- MAP TAB (placeholder) -->
-  <div id="tab-map" class="tab-content">
-    <div style="padding:60px 20px;text-align:center;">
-      <div style="font-size:64px;margin-bottom:16px;">🗺️</div>
-      <div style="font-size:20px;font-weight:800;margin-bottom:8px;">Neighbourhood Map</div>
-      <div style="font-size:14px;color:var(--sub);line-height:1.6;">Interactive map showing local notes and events in your postcode area.<br><br>Coming soon to WeNote UK.</div>
-    </div>
-  </div>
-
-  <!-- PROFILE TAB -->
-  <div id="tab-profile" class="tab-content">
-    <div class="scroll-pad" style="height:16px"></div>
-    <div class="profile-section">
-      <div class="profile-card">
-        <div class="profile-top">
-          <div class="profile-avatar">JD</div>
-          <div class="profile-info">
-            <h3>Jane Davies</h3>
-            <p>📍 Southwark, London SE1</p>
+    <!-- SESSION LOG -->
+    <div id="screen-sessions" class="screen">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Log New Session</span></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Student</label>
+                <select class="form-input" id="sessStudent"><option value="">— Select student —</option></select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-input" id="sessDate">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Time</label>
+                  <input type="time" class="form-input" id="sessTime">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Session Type</label>
+                  <select class="form-input" id="sessType">
+                    <option>Individual</option><option>Group</option><option>Drop-in</option><option>Telephone</option><option>Virtual</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attendance</label>
+                  <select class="form-input" id="sessAttend">
+                    <option>Attended</option><option>DNA (Did Not Attend)</option><option>Late</option><option>Cancelled</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Presenting Issues</label>
+                <div class="check-group" id="issueChecks">
+                  <label class="check-item"><input type="checkbox" value="Anxiety"> Anxiety</label>
+                  <label class="check-item"><input type="checkbox" value="Depression"> Depression</label>
+                  <label class="check-item"><input type="checkbox" value="Bereavement"> Bereavement</label>
+                  <label class="check-item"><input type="checkbox" value="Family Issues"> Family Issues</label>
+                  <label class="check-item"><input type="checkbox" value="Peer Relationships"> Peer Relationships</label>
+                  <label class="check-item"><input type="checkbox" value="Academic Pressure"> Academic Pressure</label>
+                  <label class="check-item"><input type="checkbox" value="Self-Harm"> Self-Harm</label>
+                  <label class="check-item"><input type="checkbox" value="Eating Concerns"> Eating Concerns</label>
+                  <label class="check-item"><input type="checkbox" value="Identity"> Identity</label>
+                  <label class="check-item"><input type="checkbox" value="Behaviour"> Behaviour</label>
+                  <label class="check-item"><input type="checkbox" value="Abuse / Neglect"> Abuse / Neglect</label>
+                  <label class="check-item"><input type="checkbox" value="Other"> Other</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Risk Level</label>
+                <div class="risk-row">
+                  <div class="risk-opt" data-risk="None" onclick="selectRisk(this)">✅ None</div>
+                  <div class="risk-opt" data-risk="Low" onclick="selectRisk(this)">🟡 Low</div>
+                  <div class="risk-opt" data-risk="Medium" onclick="selectRisk(this)">🟠 Medium</div>
+                  <div class="risk-opt" data-risk="High" onclick="selectRisk(this)">🔴 High</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Session Notes (Confidential)</label>
+                <textarea class="form-input" id="sessNotes" placeholder="Session notes — stored locally and not shared externally…"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Follow-up / Next Steps</label>
+                <input type="text" class="form-input" id="sessFollowup" placeholder="e.g. Refer to CAMHS, schedule review, contact parent…">
+              </div>
+              <button class="tb-btn" style="width:100%;justify-content:center;" onclick="saveSession()">💾 Save Session Record</button>
+            </div>
           </div>
         </div>
-        <div class="profile-stats">
-          <div class="pstat"><strong id="statPosts">0</strong><span>Posts</span></div>
-          <div class="pstat"><strong>47</strong><span>Neighbours</span></div>
-          <div class="pstat"><strong>128</strong><span>Likes Given</span></div>
-        </div>
-      </div>
-      <div class="settings-list">
-        <div class="setting-row" onclick="showToast('✏️ Edit profile — coming soon')">
-          <div class="setting-left"><span class="setting-icon">✏️</span><span class="setting-label">Edit Profile</span></div>
-          <div class="setting-right">›</div>
-        </div>
-        <div class="setting-row" onclick="showToast('📍 Postcode: SE1 7PB')">
-          <div class="setting-left"><span class="setting-icon">📍</span><span class="setting-label">My Postcode</span></div>
-          <div class="setting-right">SE1 7PB ›</div>
-        </div>
-        <div class="setting-row" onclick="showToast('🔔 Notification settings — coming soon')">
-          <div class="setting-left"><span class="setting-icon">🔔</span><span class="setting-label">Notifications</span></div>
-          <div class="setting-right">On ›</div>
-        </div>
-        <div class="setting-row" onclick="showToast('🔒 Privacy settings — coming soon')">
-          <div class="setting-left"><span class="setting-icon">🔒</span><span class="setting-label">Privacy</span></div>
-          <div class="setting-right">›</div>
-        </div>
-        <div class="setting-row" onclick="showToast('📋 Terms &amp; Conditions')">
-          <div class="setting-left"><span class="setting-icon">📋</span><span class="setting-label">Terms &amp; Conditions</span></div>
-          <div class="setting-right">›</div>
-        </div>
-        <div class="setting-row" onclick="showToast('ℹ️ WeNote UK v2.0 · © 2026 WeNote Ltd')">
-          <div class="setting-left"><span class="setting-icon">ℹ️</span><span class="setting-label">About WeNote UK</span></div>
-          <div class="setting-right">v2.0 ›</div>
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Sessions</span></div>
+            <div class="card-body" id="recentSessions"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- BOTTOM NAV -->
-<nav id="bottomNav">
-  <button class="nav-btn active" onclick="switchTab('feed')"><span class="nav-icon">🏡</span>Home</button>
-  <button class="nav-btn" onclick="switchTab('alerts')"><span class="nav-icon">🔔</span>Alerts</button>
-  <button class="nav-btn" onclick="switchTab('map')"><span class="nav-icon">🗺️</span>Map</button>
-  <button class="nav-btn" onclick="switchTab('profile')"><span class="nav-icon">👤</span>Profile</button>
-</nav>
-
-<!-- FAB -->
-<button id="fab" onclick="openCompose()">✏️</button>
-
-<!-- NOTE DETAIL MODAL -->
-<div class="modal-overlay" id="noteModal" onclick="closeNoteModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-inner" id="modalContent"></div>
-  </div>
-</div>
-
-<!-- COMPOSE MODAL -->
-<div class="compose-overlay" id="composeModal" onclick="closeCompose(event)">
-  <div class="compose-sheet">
-    <div class="modal-handle"></div>
-    <div class="compose-hdr">
-      <h3>Post a Note</h3>
-      <button class="compose-close" onclick="closeCompose()">✕</button>
-    </div>
-    <div class="compose-form">
-      <div>
-        <div class="form-label">Category</div>
-        <div class="cat-picker" id="catPicker">
-          <button class="cat-pick-btn selected" data-c="announce" onclick="pickCat(this)">📣 Announcement</button>
-          <button class="cat-pick-btn" data-c="event" onclick="pickCat(this)">🎉 Event</button>
-          <button class="cat-pick-btn" data-c="lost" onclick="pickCat(this)">🔍 Lost &amp; Found</button>
-          <button class="cat-pick-btn" data-c="help" onclick="pickCat(this)">🙏 Help Needed</button>
-          <button class="cat-pick-btn" data-c="sale" onclick="pickCat(this)">🛒 For Sale / Free</button>
-          <button class="cat-pick-btn" data-c="alert" onclick="pickCat(this)">⚠️ Safety Alert</button>
+    <!-- CALENDAR -->
+    <div id="screen-calendar" class="screen">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-body">
+            <div class="privacy-toggle" id="privacyToggle" onclick="togglePrivacy()">
+              🔒 <span id="privacyLabel">Privacy Mode: OFF — click to hide names</span>
+            </div>
+            <div class="cal-nav">
+              <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+              <div class="cal-month" id="calMonthLabel"></div>
+              <button class="cal-nav-btn" onclick="calNext()">›</button>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day-hdr">Mon</div><div class="cal-day-hdr">Tue</div><div class="cal-day-hdr">Wed</div>
+              <div class="cal-day-hdr">Thu</div><div class="cal-day-hdr">Fri</div>
+              <div class="cal-day-hdr" style="color:#DC2626;">Sat</div><div class="cal-day-hdr" style="color:#DC2626;">Sun</div>
+            </div>
+            <div class="cal-grid" id="calDays"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="calDayTitle">Select a date</span></div>
+          <div class="card-body" id="calDaySessions"><div style="color:var(--sub);font-size:13px;text-align:center;padding:20px 0;">Select a date to view sessions</div></div>
         </div>
       </div>
-      <div>
-        <div class="form-label">Title</div>
-        <input class="form-input" id="composeTitle" type="text" placeholder="What's your note about?" maxlength="80">
+    </div>
+
+    <!-- ASSESSMENTS -->
+    <div id="screen-assessments" class="screen">
+      <div class="filter-row" style="margin-bottom:18px;">
+        <button class="filter-btn active" onclick="switchAssess('sdq',this)">SDQ</button>
+        <button class="filter-btn" onclick="switchAssess('phqa',this)">PHQ-A</button>
+        <button class="filter-btn" onclick="switchAssess('gad7',this)">GAD-7</button>
+        <button class="filter-btn" onclick="switchAssess('wemwbs',this)">WEMWBS</button>
       </div>
-      <div>
-        <div class="form-label">Message</div>
-        <textarea class="form-input" id="composeBody" placeholder="Share more details with your neighbours…" maxlength="500"></textarea>
+      <div id="assessSDQ" class="assess-panel">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Strengths &amp; Difficulties Questionnaire (SDQ)</span>
+            <select class="form-input" style="max-width:200px;" id="sdqStudent"><option value="">— Select student —</option></select>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Respondent</label>
+              <select class="form-input" style="max-width:220px;">
+                <option>Self-report (11–17 yrs)</option><option>Parent / Carer</option><option>Teacher</option>
+              </select>
+            </div>
+            <p style="font-size:12px;color:var(--sub);margin-bottom:14px;">For each item, please mark Not True, Somewhat True or Certainly True. It would help us if you answered all items as best you can even if you are not absolutely certain.</p>
+            <div id="sdqQuestions"></div>
+            <div class="score-panel" id="sdqScore" style="display:none;">
+              <div class="score-big" id="sdqScoreVal">—</div>
+              <div class="score-label" id="sdqScoreLabel">Total Difficulties Score</div>
+              <div style="font-size:12px;color:var(--sub);margin-top:6px;">0–15 Normal · 16–19 Borderline · 20–40 Abnormal</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="btn btn-primary" onclick="calcSDQ()">Calculate Score</button>
+              <button class="btn btn-sec" onclick="saveAssessment('SDQ')">💾 Save to Student Record</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="form-label">Your Name / Display Name</div>
-        <input class="form-input" id="composeName" type="text" placeholder="e.g. Sarah from No.14" maxlength="40">
+      <div id="assessPHQA" class="assess-panel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">PHQ-A — Adolescent Depression Screen</span>
+            <select class="form-input" style="max-width:200px;" id="phqaStudent"><option value="">— Select student —</option></select>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--sub);margin-bottom:14px;">Over the past 2 weeks, how often have you been bothered by any of the following problems?</p>
+            <div id="phqaQuestions"></div>
+            <div class="score-panel" id="phqaScore" style="display:none;">
+              <div class="score-big" id="phqaScoreVal">—</div>
+              <div class="score-label">PHQ-A Score</div>
+              <div style="font-size:12px;color:var(--sub);margin-top:6px;">0–4 Minimal · 5–9 Mild · 10–14 Moderate · 15–19 Moderately Severe · 20–27 Severe</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="btn btn-primary" onclick="calcPHQA()">Calculate Score</button>
+              <button class="btn btn-sec" onclick="saveAssessment('PHQ-A')">💾 Save to Student Record</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <button class="submit-btn" onclick="submitNote()">📤 Post to Neighbourhood</button>
+      <div id="assessGAD7" class="assess-panel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">GAD-7 — Generalised Anxiety Disorder</span>
+            <select class="form-input" style="max-width:200px;" id="gad7Student"><option value="">— Select student —</option></select>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--sub);margin-bottom:14px;">Over the last 2 weeks, how often have you been bothered by the following problems?</p>
+            <div id="gad7Questions"></div>
+            <div class="score-panel" id="gad7Score" style="display:none;">
+              <div class="score-big" id="gad7ScoreVal">—</div>
+              <div class="score-label">GAD-7 Score</div>
+              <div style="font-size:12px;color:var(--sub);margin-top:6px;">0–4 Minimal · 5–9 Mild · 10–14 Moderate · 15–21 Severe</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="btn btn-primary" onclick="calcGAD7()">Calculate Score</button>
+              <button class="btn btn-sec" onclick="saveAssessment('GAD-7')">💾 Save to Student Record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="assessWEMWBS" class="assess-panel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">WEMWBS — Warwick-Edinburgh Mental Wellbeing Scale</span>
+            <select class="form-input" style="max-width:200px;" id="wemwbsStudent"><option value="">— Select student —</option></select>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--sub);margin-bottom:14px;">Below are some statements about feelings and thoughts. Please tick the box that best describes your experience of each over the last 2 weeks.</p>
+            <div id="wemwbsQuestions"></div>
+            <div class="score-panel" id="wemwbsScore" style="display:none;">
+              <div class="score-big" id="wemwbsScoreVal">—</div>
+              <div class="score-label">WEMWBS Score</div>
+              <div style="font-size:12px;color:var(--sub);margin-top:6px;">14–34 Low · 35–52 Moderate · 53–70 High wellbeing</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="btn btn-primary" onclick="calcWEMWBS()">Calculate Score</button>
+              <button class="btn btn-sec" onclick="saveAssessment('WEMWBS')">💾 Save to Student Record</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="screen-reports" class="screen">
+      <div class="form-row" style="margin-bottom:16px;">
+        <div class="form-group" style="flex:0 0 auto;">
+          <label class="form-label">Academic Year</label>
+          <select class="form-input"><option>2025–26</option><option>2024–25</option></select>
+        </div>
+        <div class="form-group" style="flex:0 0 auto;">
+          <label class="form-label">Term</label>
+          <select class="form-input"><option>All Terms</option><option>Autumn Term</option><option>Spring Term</option><option>Summer Term</option></select>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:14px;gap:8px;">
+          <button class="btn btn-primary" onclick="showToast('📊 Generating SIMS-compatible export…')">Export to SIMS</button>
+          <button class="btn btn-sec" onclick="showToast('🖨️ Report sent to printer')">Print Report</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Sessions</div><div class="stat-value" id="rpTotal">0</div><div class="stat-change">This academic year</div></div>
+        <div class="stat-card"><div class="stat-label">Students Seen</div><div class="stat-value" id="rpStudents">0</div><div class="stat-change">Unique pupils</div></div>
+        <div class="stat-card"><div class="stat-label">DNA Rate</div><div class="stat-value">8%</div><div class="stat-change neg">↑ 2% from last term</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Sessions/Pupil</div><div class="stat-value" id="rpAvg">0</div><div class="stat-change">Per student</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Sessions by Month</span></div>
+          <div class="card-body" id="chartMonths"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Presenting Issues</span></div>
+          <div class="card-body" id="chartIssues"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Sessions by Year Group</span></div>
+          <div class="card-body" id="chartYears"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Referral Sources</span></div>
+          <div class="card-body" id="chartReferrals"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div id="screen-documents" class="screen">
+      <div class="doc-grid">
+        <div class="doc-card" onclick="genDoc('referral')"><div class="doc-icon">📨</div><div class="doc-title">CAMHS Referral Letter</div><div class="doc-desc">Standard referral to Child & Adolescent Mental Health Services</div></div>
+        <div class="doc-card" onclick="genDoc('consent')"><div class="doc-icon">✍️</div><div class="doc-title">Counselling Consent Form</div><div class="doc-desc">Parent / carer consent for counselling (GDPR compliant)</div></div>
+        <div class="doc-card" onclick="genDoc('risk')"><div class="doc-icon">⚠️</div><div class="doc-title">Risk Assessment</div><div class="doc-desc">Child protection risk assessment documentation</div></div>
+        <div class="doc-card" onclick="genDoc('summary')"><div class="doc-icon">📋</div><div class="doc-title">Session Summary</div><div class="doc-desc">End-of-block counselling summary for pastoral records</div></div>
+        <div class="doc-card" onclick="genDoc('dsl')"><div class="doc-icon">🛡️</div><div class="doc-title">DSL Referral Form</div><div class="doc-desc">Safeguarding referral to Designated Safeguarding Lead</div></div>
+        <div class="doc-card" onclick="genDoc('ehc')"><div class="doc-icon">📘</div><div class="doc-title">EHC Plan Contribution</div><div class="doc-desc">Counsellor contribution to Education, Health and Care Plan</div></div>
+        <div class="doc-card" onclick="genDoc('report')"><div class="doc-icon">📊</div><div class="doc-title">Annual Report</div><div class="doc-desc">Year-end counselling service summary for SLT</div></div>
+        <div class="doc-card" onclick="genDoc('genogram')"><div class="doc-icon">🌳</div><div class="doc-title">Genogram Template</div><div class="doc-desc">Family tree / genogram for use in systemic work</div></div>
+        <div class="doc-card" onclick="genDoc('contract')"><div class="doc-icon">🤝</div><div class="doc-title">Working Agreement</div><div class="doc-desc">Counselling contract & confidentiality agreement for students</div></div>
+      </div>
+      <div class="card" id="docPreview" style="display:none;margin-top:16px;">
+        <div class="card-header"><span class="card-title" id="docPreviewTitle">Document Preview</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sec" onclick="document.getElementById('docPreview').style.display='none'">Close</button>
+            <button class="btn btn-primary" onclick="showToast('🖨️ Document sent to printer')">🖨️ Print</button>
+          </div>
+        </div>
+        <div class="card-body" id="docPreviewBody" style="font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:Georgia,serif;"></div>
+      </div>
+    </div>
+
+    <!-- SAFEGUARDING -->
+    <div id="screen-safeguarding" class="screen">
+      <div class="card" style="border-color:#FECACA;">
+        <div class="card-header" style="background:#FEF2F2;"><span class="card-title" style="color:#991B1B;">🛡️ Active Safeguarding Concerns</span></div>
+        <div class="card-body">
+          <div class="session-item">
+            <div class="sess-avatar" style="background:#DC2626;">ED</div>
+            <div class="sess-info">
+              <div class="sess-name">Ethan Davis — Year 10</div>
+              <div class="sess-meta">Disclosed risk of self-harm · Session: 19/06/2026 · DSL referral pending</div>
+            </div>
+            <span class="risk-badge risk-high">High</span>
+            <button class="btn btn-danger" style="margin-left:8px;" onclick="showToast('📨 DSL referral form generated for Ethan Davis')">Refer to DSL</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Safeguarding Log</span></div>
+        <div class="card-body">
+          <div class="session-item">
+            <div class="sess-avatar" style="background:#D97706;">CW</div>
+            <div class="sess-info">
+              <div class="sess-name">Charlotte Wilson — Year 11</div>
+              <div class="sess-meta">Family concerns raised · DSL notified 14/06/2026 · Monitoring</div>
+            </div>
+            <span class="risk-badge risk-medium">Medium</span>
+          </div>
+          <div class="session-item">
+            <div class="sess-avatar" style="background:#16A34A;">IM</div>
+            <div class="sess-info">
+              <div class="sess-name">Isabelle Murphy — Year 8</div>
+              <div class="sess-meta">Bullying disclosed · SENCO informed 10/06/2026 · Resolved</div>
+            </div>
+            <span class="risk-badge risk-none">Resolved</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Key Contacts</span></div>
+        <div class="card-body">
+          <div class="info-grid" style="grid-template-columns:repeat(2,1fr);">
+            <div class="info-item"><div class="info-label">Designated Safeguarding Lead</div><div class="info-value">Mr R. Okafor</div></div>
+            <div class="info-item"><div class="info-label">Deputy DSL</div><div class="info-value">Ms J. Patel</div></div>
+            <div class="info-item"><div class="info-label">SENCO</div><div class="info-value">Mrs T. Clarke</div></div>
+            <div class="info-item"><div class="info-label">Local Authority MASH</div><div class="info-value">020 7525 1921</div></div>
+            <div class="info-item"><div class="info-label">CAMHS Duty Line</div><div class="info-value">020 3228 5400</div></div>
+            <div class="info-item"><div class="info-label">Emergency Social Care</div><div class="info-value">020 7525 5000</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="screen-settings" class="screen">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">School Information</span></div>
+            <div class="card-body">
+              <div class="settings-section">
+                <div class="settings-row"><label>School Name</label><input class="form-input" id="setSchool" value="Southwark Academy" onchange="updateSettings()"></div>
+                <div class="settings-row"><label>School Type</label><select class="form-input" style="max-width:260px;"><option>Secondary (11–18)</option><option>Primary (4–11)</option><option>All-Through (4–18)</option><option>Special School</option></select></div>
+                <div class="settings-row"><label>Local Authority</label><input class="form-input" value="London Borough of Southwark" style="max-width:260px;"></div>
+                <div class="settings-row"><label>URN</label><input class="form-input" value="100123" style="max-width:260px;"></div>
+                <div class="settings-row"><label>Academic Year</label><select class="form-input" style="max-width:260px;"><option>2025–26</option><option>2026–27</option></select></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Counsellor Details</span></div>
+            <div class="card-body">
+              <div class="settings-row"><label>Name</label><input class="form-input" id="setCounsellor" value="Ms Sarah Williams" onchange="updateSettings()"></div>
+              <div class="settings-row"><label>Qualification</label><input class="form-input" value="BACP Accredited" style="max-width:260px;"></div>
+              <div class="settings-row"><label>BACP / UKCP Number</label><input class="form-input" value="BACP-098765" style="max-width:260px;"></div>
+              <div class="settings-row"><label>Email</label><input class="form-input" value="s.williams@southwarkacademy.org.uk" style="max-width:260px;"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Data &amp; Privacy</span></div>
+            <div class="card-body">
+              <p style="font-size:12.5px;color:var(--sub);line-height:1.6;margin-bottom:14px;">All session records are stored locally on this device in accordance with <strong>UK GDPR</strong> and the <strong>Data Protection Act 2018</strong>. No student data is transmitted to external servers.</p>
+              <div class="settings-row"><label>Auto-lock after inactivity</label><select class="form-input" style="max-width:160px;"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option><option>Never</option></select></div>
+              <div class="settings-row"><label>Data retention period</label><select class="form-input" style="max-width:160px;"><option>3 years</option><option>5 years</option><option>7 years</option></select></div>
+              <div style="display:flex;gap:8px;margin-top:14px;">
+                <button class="btn btn-primary" onclick="exportData()">📤 Export All Data</button>
+                <button class="btn btn-sec" onclick="showToast('💾 Backup created: wenote-uk-backup-' + new Date().toISOString().slice(0,10) + '.json')">💾 Create Backup</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">SIMS Integration</span></div>
+            <div class="card-body">
+              <p style="font-size:12.5px;color:var(--sub);line-height:1.6;margin-bottom:14px;">Import your student register directly from SIMS or other MIS systems.</p>
+              <div class="settings-row"><label>MIS System</label><select class="form-input" style="max-width:200px;"><option>SIMS</option><option>Bromcom</option><option>Arbor</option><option>iSAMS</option><option>SchoolBase</option></select></div>
+              <div style="display:flex;gap:8px;margin-top:14px;">
+                <button class="btn btn-primary" onclick="showToast('📥 Importing from SIMS… 312 pupils found')">📥 Import from SIMS</button>
+                <button class="btn btn-sec" onclick="showToast('📤 Session stats exported for SIMS upload')">📤 Export Stats</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ADD STUDENT MODAL -->
+<div class="modal-overlay" id="addStudentModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><h3>Add New Student</h3><button class="modal-close" onclick="closeModal('addStudentModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="newFirstName" placeholder="e.g. Oliver"></div>
+        <div class="form-group"><label class="form-label">Surname</label><input class="form-input" id="newLastName" placeholder="e.g. Smith"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="newDob"></div>
+        <div class="form-group"><label class="form-label">Gender</label><select class="form-input" id="newGender"><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Year Group</label><select class="form-input" id="newYear"><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option></select></div>
+        <div class="form-group"><label class="form-label">Form / Tutor Group</label><input class="form-input" id="newForm" placeholder="e.g. 10A"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Referral Source</label><select class="form-input" id="newReferral"><option>Self</option><option>Teacher</option><option>Parent / Carer</option><option>SENCO</option><option>Head of Year</option><option>GP / CAMHS</option><option>Social Services</option></select></div>
+        <div class="form-group"><label class="form-label">Ethnicity</label><select class="form-input" id="newEthnicity"><option>White British</option><option>White Irish</option><option>White Other</option><option>Mixed White &amp; Black Caribbean</option><option>Mixed White &amp; Black African</option><option>Mixed White &amp; Asian</option><option>Mixed Other</option><option>Asian / Asian British Indian</option><option>Asian / Asian British Pakistani</option><option>Asian / Asian British Bangladeshi</option><option>Black / Black British African</option><option>Black / Black British Caribbean</option><option>Black Other</option><option>Chinese</option><option>Other</option><option>Not stated</option></select></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Parent / Carer Name</label><input class="form-input" id="newParent" placeholder="e.g. Mrs J. Smith"></div>
+        <div class="form-group"><label class="form-label">Contact Number</label><input class="form-input" id="newContact" placeholder="e.g. 07700 900123"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">SEND</label><select class="form-input" id="newSend"><option>None</option><option>SEND Support</option><option>EHC Plan</option></select></div>
+        <div class="form-group"><label class="form-label">Pupil Premium (FSM)</label><select class="form-input" id="newFsm"><option>No</option><option>Yes</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sec" onclick="closeModal('addStudentModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addStudent()">Add Student</button>
     </div>
   </div>
 </div>
@@ -488,334 +765,667 @@ textarea.form-input{resize:none;height:110px;}
 // ══════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════
-const CATS={
-  announce:{label:'Announcement',icon:'📣',bg:'c-announce',cc:'cc-announce'},
-  event:   {label:'Event',       icon:'🎉',bg:'c-event',   cc:'cc-event'},
-  lost:    {label:'Lost & Found',icon:'🔍',bg:'c-lost',    cc:'cc-lost'},
-  help:    {label:'Help Needed', icon:'🙏',bg:'c-help',    cc:'cc-help'},
-  sale:    {label:'For Sale / Free',icon:'🛒',bg:'c-sale', cc:'cc-sale'},
-  alert:   {label:'Safety Alert',icon:'⚠️',bg:'c-alert',  cc:'cc-alert'},
-};
+const COLOURS=['#1565C0','#16A34A','#7C3AED','#D97706','#DC2626','#0D9488','#DB2777','#EA580C'];
 
-let notes=[
-  {id:0,cat:'announce',pinned:true,
-   title:'Bin Collection Changes — Southwark Council',
-   body:'Please be aware that from Monday 30th June, general waste collections in SE1 will move from Tuesday to Wednesday. Recycling collections remain unchanged on Fridays. Please ensure bins are out by 07:00 on collection day. Contact the council on 020 7525 5000 for further information.',
-   author:'Council Liaison',avatar:'🏛️',avatarBg:'#003399',
-   time:'Today, 08:15',likes:34,liked:false,comments:8},
-  {id:1,cat:'event',pinned:false,
-   title:'Summer Street Party — Saturday 28th June',
-   body:'Join us for our annual summer street party on Bermondsey Street! Live music, food stalls, and fun for all the family from 12:00 to 20:00. Local bands, artisan food vendors, and a bouncy castle for the kids. Bring your own chairs and blankets!',
-   author:'The Bermondsey Collective',avatar:'🎊',avatarBg:'#15803D',
-   time:'Yesterday, 14:30',likes:62,liked:false,comments:15},
-  {id:2,cat:'lost',pinned:false,
-   title:'Lost: Tabby Cat — Answers to "Biscuit"',
-   body:'Our tabby cat Biscuit has been missing since Thursday evening. She was last seen near Leathermarket Gardens. She has a pale orange collar with a bell. Please ring or text 07700 900123 if you spot her. The children are heartbroken.',
-   author:'Davies Family',avatar:'🐱',avatarBg:'#A16207',
-   time:'Thu 19 Jun, 18:45',likes:41,liked:false,comments:12},
-  {id:3,cat:'help',pinned:false,
-   title:'Elderly Neighbour Needs a Hand with Shopping',
-   body:'My 82-year-old neighbour on Grange Walk needs help with her weekly shop. She's not very mobile and the online delivery slots are always taken. Would anyone be able to pop to Tesco for her on a Saturday? She would be so grateful.',
-   author:'Mark (No. 34)',avatar:'🤝',avatarBg:'#C2410C',
-   time:'Wed 18 Jun, 10:00',likes:29,liked:false,comments:5},
-  {id:4,cat:'sale',pinned:false,
-   title:'Free: Children\'s Bikes — Various Sizes',
-   body:'We're having a clear-out and have three children\'s bikes to give away — ages roughly 3–8. All are in reasonable condition. First come, first served. Pop round to 12 Grange Road any weekend morning before noon. No need to ring ahead.',
-   author:'The Thornton Family',avatar:'🚲',avatarBg:'#7E22CE',
-   time:'Tue 17 Jun, 16:20',likes:53,liked:false,comments:21},
-  {id:5,cat:'alert',pinned:false,
-   title:'Suspicious Activity on Long Lane Last Night',
-   body:'Several residents reported a group loitering near Long Lane car park between 23:00 and 01:00 on Tuesday. If you have CCTV or witnessed anything, please report to the Metropolitan Police on 101 (non-emergency) or 999 if you feel unsafe. Stay vigilant.',
-   author:'Neighbourhood Watch',avatar:'👮',avatarBg:'#BE123C',
-   time:'Wed 18 Jun, 07:00',likes:18,liked:false,comments:9},
-  {id:6,cat:'event',pinned:false,
-   title:'Community Garden Planting Day — Sunday 22nd June',
-   body:'Come and help plant out the new herb garden at Bermondsey Spa Gardens this Sunday from 10:00–13:00. Gloves and tools provided. Bring your family — children especially welcome! We\'ll have tea, coffee, and biscuits. All skill levels welcome.',
-   author:'Green Southwark',avatar:'🌿',avatarBg:'#15803D',
-   time:'Mon 16 Jun, 09:30',likes:37,liked:false,comments:7},
-  {id:7,cat:'announce',pinned:false,
-   title:'New Post Office Branch Opening — Monday 23rd June',
-   body:'We are delighted to announce that a new Post Office branch will open on Monday 23rd June inside the McColl\'s on Tower Bridge Road. Opening hours: Mon–Fri 08:00–18:00, Sat 09:00–17:00. Full range of postal and banking services available.',
-   author:'Local Business Network',avatar:'📮',avatarBg:'#003399',
-   time:'Mon 16 Jun, 11:00',likes:44,liked:false,comments:6},
-  {id:8,cat:'lost',pinned:false,
-   title:'Found: Brown Leather Wallet near Borough Market',
-   body:'Found a brown leather wallet near Borough Market this morning (Saturday). Contains cards and some cash — no ID visible. Please contact me via the app with a description to identify it. Happy to arrange return at a convenient time.',
-   author:'Anonymous Neighbour',avatar:'👜',avatarBg:'#A16207',
-   time:'Sat 14 Jun, 11:45',likes:22,liked:false,comments:3},
-  {id:9,cat:'help',pinned:false,
-   title:'Looking for a Reliable Plumber — Any Recommendations?',
-   body:'Our kitchen tap has been dripping for weeks and I\'ve been let down by two tradespeople already. Does anyone have a recommendation for a reliable, reasonably priced plumber in the SE1 area? Ideally someone local. Thank you!',
-   author:'Emma, Leathermarket St',avatar:'🔧',avatarBg:'#C2410C',
-   time:'Fri 13 Jun, 17:30',likes:11,liked:false,comments:14},
+let students = JSON.parse(localStorage.getItem('wn_students') || 'null') || [
+  {id:1,first:'Oliver',last:'Smith',dob:'2009-03-14',gender:'Male',year:'10',form:'10A',referral:'Teacher',ethnicity:'White British',parent:'Mrs A. Smith',contact:'07700 900101',send:'None',fsm:'No',sessions:[],risk:'None',colour:COLOURS[0]},
+  {id:2,first:'Amelia',last:'Johnson',dob:'2010-07-22',gender:'Female',year:'9',form:'9B',referral:'Self',ethnicity:'Black / Black British African',parent:'Mr D. Johnson',contact:'07700 900102',send:'SEND Support',fsm:'Yes',sessions:[],risk:'Low',colour:COLOURS[1]},
+  {id:3,first:'Mohammed',last:'Ali',dob:'2008-11-05',gender:'Male',year:'11',form:'11C',referral:'SENCO',ethnicity:'Asian / Asian British Pakistani',parent:'Mrs F. Ali',contact:'07700 900103',send:'None',fsm:'No',sessions:[],risk:'None',colour:COLOURS[2]},
+  {id:4,first:'Isabelle',last:'Murphy',dob:'2011-02-18',gender:'Female',year:'8',form:'8A',referral:'Parent / Carer',ethnicity:'White Irish',parent:'Mrs C. Murphy',contact:'07700 900104',send:'None',fsm:'No',sessions:[],risk:'None',colour:COLOURS[3]},
+  {id:5,first:'Jack',last:'Williams',dob:'2007-09-30',gender:'Male',year:'12',form:'12D',referral:'Self',ethnicity:'Mixed White & Black Caribbean',parent:'Mr P. Williams',contact:'07700 900105',send:'None',fsm:'Yes',sessions:[],risk:'Low',colour:COLOURS[4]},
+  {id:6,first:'Sophia',last:'Brown',dob:'2012-05-11',gender:'Female',year:'7',form:'7B',referral:'Teacher',ethnicity:'White British',parent:'Mrs L. Brown',contact:'07700 900106',send:'EHC Plan',fsm:'No',sessions:[],risk:'None',colour:COLOURS[5]},
+  {id:7,first:'Ethan',last:'Davis',dob:'2009-08-27',gender:'Male',year:'10',form:'10C',referral:'Head of Year',ethnicity:'White British',parent:'Mr S. Davis',contact:'07700 900107',send:'SEND Support',fsm:'Yes',sessions:[],risk:'High',colour:COLOURS[6]},
+  {id:8,first:'Charlotte',last:'Wilson',dob:'2008-01-15',gender:'Female',year:'11',form:'11A',referral:'GP / CAMHS',ethnicity:'Asian / Asian British Indian',parent:'Mr T. Wilson',contact:'07700 900108',send:'None',fsm:'No',sessions:[],risk:'Medium',colour:COLOURS[7]},
 ];
 
-let activeCat='all';
-let selectedCat='announce';
-let openNoteId=null;
+let sessions = JSON.parse(localStorage.getItem('wn_sessions') || 'null') || [
+  {id:1,studentId:1,date:'2026-06-22',time:'09:00',type:'Individual',attend:'Attended',issues:['Anxiety','Academic Pressure'],risk:'None',notes:'Student discussed upcoming GCSEs.',followup:'Schedule review in 2 weeks',colour:COLOURS[0]},
+  {id:2,studentId:7,date:'2026-06-22',time:'10:00',type:'Individual',attend:'Attended',issues:['Self-Harm','Depression'],risk:'High',notes:'Student disclosed risk of self-harm.',followup:'DSL referral required',colour:COLOURS[6]},
+  {id:3,studentId:8,date:'2026-06-22',time:'11:00',type:'Individual',attend:'Attended',issues:['Family Issues','Anxiety'],risk:'Medium',notes:'Parents separating.',followup:'Contact CAMHS',colour:COLOURS[7]},
+  {id:4,studentId:2,date:'2026-06-20',time:'14:00',type:'Drop-in',attend:'Attended',issues:['Peer Relationships'],risk:'None',notes:'Friendship difficulties.',followup:'Check in next week',colour:COLOURS[1]},
+  {id:5,studentId:3,date:'2026-06-19',time:'09:30',type:'Individual',attend:'DNA (Did Not Attend)',issues:[],risk:'None',notes:'',followup:'Re-schedule',colour:COLOURS[2]},
+  {id:6,studentId:5,date:'2026-06-18',time:'13:00',type:'Individual',attend:'Attended',issues:['Depression','Bereavement'],risk:'Low',notes:'Grief following loss of grandparent.',followup:'Refer to bereavement counsellor',colour:COLOURS[4]},
+];
+
+let activeFilter='all';
+let selectedRisk='None';
+let calYear=2026, calMonth=5; // June 2026 (0-indexed)
+let privacyMode=false;
+let selectedCalDate=null;
+
+// ══════════════════════════════════════════════
+//  SAVE
+// ══════════════════════════════════════════════
+function save(){
+  localStorage.setItem('wn_students',JSON.stringify(students));
+  localStorage.setItem('wn_sessions',JSON.stringify(sessions));
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+const TITLES={dashboard:'Dashboard',students:'Students',sessions:'Session Log',calendar:'Calendar',assessments:'Assessments',reports:'Reports',documents:'Documents',safeguarding:'Safeguarding',settings:'Settings'};
+
+function nav(id, el){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.trim().startsWith(TITLES[id]?.slice(0,5)))n.classList.add('active');});
+  document.getElementById('tbTitle').textContent=TITLES[id]||id;
+  document.getElementById('tbSub').textContent='';
+  if(id==='students') renderStudents();
+  if(id==='calendar') renderCalendar();
+  if(id==='reports') renderReports();
+  if(id==='sessions'){populateStudentSelects();renderRecentSessions();}
+  if(id==='assessments'){populateStudentSelects();renderSDQ();renderPHQA();renderGAD7();renderWEMWBS();}
+  if(id==='dashboard') renderDashboard();
+}
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard(){
+  document.getElementById('statTotal').textContent=students.length;
+  const today=new Date().toISOString().slice(0,10);
+  const todaySess=sessions.filter(s=>s.date===today);
+  document.getElementById('statToday').textContent=todaySess.length;
+  const weekSess=sessions.filter(s=>new Date(s.date)>=new Date(Date.now()-7*864e5));
+  document.getElementById('statWeek').textContent=weekSess.length;
+  document.getElementById('statMonth').textContent=sessions.filter(s=>s.date.slice(0,7)===today.slice(0,7)).length;
+
+  const todayDiv=document.getElementById('todaySessions');
+  if(todaySess.length===0){
+    todayDiv.innerHTML='<div style="color:var(--sub);font-size:13px;text-align:center;padding:14px;">No sessions today</div>';
+  } else {
+    todayDiv.innerHTML=todaySess.map(s=>{
+      const st=students.find(x=>x.id===s.studentId);
+      if(!st)return'';
+      return `<div class="session-item">
+        <div class="sess-time">${s.time}</div>
+        <div class="sess-avatar" style="background:${st.colour}">${st.first[0]}${st.last[0]}</div>
+        <div class="sess-info"><div class="sess-name">${st.first} ${st.last}</div><div class="sess-meta">Y${st.year} · ${s.type} · ${s.attend}</div></div>
+        <span class="risk-badge risk-${s.risk.toLowerCase().replace(' ','-')}">${s.risk}</span>
+      </div>`;
+    }).join('');
+  }
+
+  const actDiv=document.getElementById('recentActivity');
+  const recentActs=[
+    {t:'Session logged — Ethan Davis',when:'2h ago'},
+    {t:'Charlotte Wilson referred to CAMHS',when:'3h ago'},
+    {t:'New student added — Sophia Brown',when:'Yesterday'},
+    {t:'SDQ assessment completed — Jack Williams',when:'Yesterday'},
+    {t:'DSL notified — safeguarding concern',when:'3 days ago'},
+  ];
+  actDiv.innerHTML=recentActs.map(a=>`<div class="activity-item"><div class="activity-dot"></div><div class="activity-text">${a.t}</div><div class="activity-time">${a.when}</div></div>`).join('');
+
+  const hr=students.filter(s=>s.risk==='High'||s.risk==='Medium');
+  document.getElementById('highRiskList').innerHTML=hr.length===0?'<div style="color:var(--sub);font-size:13px;">No high/medium risk students currently</div>':
+    hr.map(s=>`<div class="session-item">
+      <div class="sess-avatar" style="background:${s.colour}">${s.first[0]}${s.last[0]}</div>
+      <div class="sess-info"><div class="sess-name">${s.first} ${s.last}</div><div class="sess-meta">Y${s.year} · ${s.form} · Last: ${sessions.filter(x=>x.studentId===s.id).slice(-1)[0]?.date||'—'}</div></div>
+      <span class="risk-badge risk-${s.risk.toLowerCase()}">${s.risk}</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  STUDENTS
+// ══════════════════════════════════════════════
+function setYearFilter(y,btn){
+  activeFilter=y;
+  document.querySelectorAll('#yearFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStudents();
+}
+
+function renderStudents(){
+  const q=(document.getElementById('stuSearch')?.value||'').toLowerCase();
+  let filtered=students.filter(s=>{
+    if(activeFilter!=='all'&&s.year!==activeFilter)return false;
+    if(q&&!`${s.first} ${s.last} ${s.form}`.toLowerCase().includes(q))return false;
+    return true;
+  });
+  const tbody=document.getElementById('studentTableBody');
+  tbody.innerHTML=filtered.map(s=>{
+    const sessCnt=sessions.filter(x=>x.studentId===s.id).length;
+    const lastSess=sessions.filter(x=>x.studentId===s.id).slice(-1)[0];
+    const lastDate=lastSess?formatDate(lastSess.date):'—';
+    return `<tr onclick="openStudentProfile(${s.id})">
+      <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:${s.colour};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">${s.first[0]}${s.last[0]}</div><span class="stu-name">${s.first} ${s.last}</span></div></td>
+      <td><span class="year-badge">Year ${s.year}</span></td>
+      <td>${s.form}</td>
+      <td>${lastDate}</td>
+      <td>${sessCnt}</td>
+      <td><span class="risk-badge risk-${s.risk.toLowerCase().replace(' ','-')}">${s.risk}</span></td>
+      <td>${s.send!=='None'?`<span class="gdpr-tag">${s.send}</span>`:'—'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('statTotal').textContent=students.length;
+}
+
+function openStudentProfile(id){
+  const s=students.find(x=>x.id===id);
+  if(!s)return;
+  const sessCnt=sessions.filter(x=>x.studentId===id);
+  document.getElementById('studentListView').style.display='none';
+  const pv=document.getElementById('studentProfileView');
+  pv.style.display='block';
+  document.getElementById('tbTitle').textContent=`${s.first} ${s.last}`;
+  pv.innerHTML=`
+    <div class="back-btn" onclick="closeProfile()">‹ Back to Students</div>
+    <div class="profile-hdr">
+      <div class="profile-big-av" style="background:${s.colour}">${s.first[0]}${s.last[0]}</div>
+      <div style="flex:1">
+        <div class="profile-name">${s.first} ${s.last}</div>
+        <div style="font-size:13px;color:var(--sub);margin-top:3px;">Year ${s.year} · ${s.form} · ${s.gender}</div>
+        <div class="profile-tags">
+          <span class="profile-tag">📅 DOB: ${formatDate(s.dob)}</span>
+          <span class="profile-tag">📞 ${s.contact}</span>
+          <span class="profile-tag">👤 ${s.parent}</span>
+          ${s.send!=='None'?`<span class="profile-tag" style="background:#F0FDF4;color:#166534;">${s.send}</span>`:''}
+          ${s.fsm==='Yes'?`<span class="profile-tag" style="background:#EFF6FF;color:#1E40AF;">Pupil Premium</span>`:''}
+          <span class="profile-tag">Referral: ${s.referral}</span>
+        </div>
+      </div>
+      <span class="risk-badge risk-${s.risk.toLowerCase().replace(' ','-')}" style="font-size:12px;padding:4px 12px;">${s.risk} Risk</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Total Sessions</div><div class="info-value">${sessCnt.length}</div></div>
+      <div class="info-item"><div class="info-label">Ethnicity</div><div class="info-value">${s.ethnicity}</div></div>
+      <div class="info-item"><div class="info-label">Current Risk</div><div class="info-value">${s.risk}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Session History</span>
+        <button class="btn btn-primary" onclick="prefillSession(${s.id})">+ Log Session</button>
+      </div>
+      <div class="card-body">
+        ${sessCnt.length===0?'<div style="color:var(--sub);font-size:13px;">No sessions recorded yet</div>':
+          sessCnt.slice().reverse().map(sess=>`
+            <div class="session-item">
+              <div class="sess-time">${formatDate(sess.date)}</div>
+              <div class="sess-info">
+                <div class="sess-name">${sess.type} · ${sess.time}</div>
+                <div class="sess-meta">${sess.attend}${sess.issues.length?' · '+sess.issues.join(', '):''}</div>
+                ${sess.notes?`<div style="font-size:12px;color:var(--sub);margin-top:3px;font-style:italic;">"${sess.notes.slice(0,80)}…"</div>`:''}
+              </div>
+              <span class="risk-badge risk-${sess.risk.toLowerCase().replace(' ','-')}">${sess.risk}</span>
+            </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function closeProfile(){
+  document.getElementById('studentListView').style.display='block';
+  document.getElementById('studentProfileView').style.display='none';
+  document.getElementById('tbTitle').textContent='Students';
+}
+
+function openAddStudent(){
+  document.getElementById('addStudentModal').classList.add('open');
+}
+
+function addStudent(){
+  const first=document.getElementById('newFirstName').value.trim();
+  const last=document.getElementById('newLastName').value.trim();
+  if(!first||!last){showToast('⚠️ Please enter first and last name');return;}
+  const s={
+    id:Date.now(),first,last,
+    dob:document.getElementById('newDob').value,
+    gender:document.getElementById('newGender').value,
+    year:document.getElementById('newYear').value,
+    form:document.getElementById('newForm').value,
+    referral:document.getElementById('newReferral').value,
+    ethnicity:document.getElementById('newEthnicity').value,
+    parent:document.getElementById('newParent').value,
+    contact:document.getElementById('newContact').value,
+    send:document.getElementById('newSend').value,
+    fsm:document.getElementById('newFsm').value,
+    sessions:[],risk:'None',
+    colour:COLOURS[students.length%COLOURS.length],
+  };
+  students.push(s);
+  save();
+  closeModal('addStudentModal');
+  renderStudents();
+  populateStudentSelects();
+  showToast(`✅ ${first} ${last} added to the register`);
+}
+
+function prefillSession(id){
+  nav('sessions',null);
+  setTimeout(()=>{
+    document.getElementById('sessStudent').value=id;
+    const now=new Date();
+    document.getElementById('sessDate').value=now.toISOString().slice(0,10);
+    document.getElementById('sessTime').value=now.toTimeString().slice(0,5);
+  },100);
+}
+
+// ══════════════════════════════════════════════
+//  SESSIONS
+// ══════════════════════════════════════════════
+function populateStudentSelects(){
+  const opts=students.map(s=>`<option value="${s.id}">${s.first} ${s.last} (Y${s.year})</option>`).join('');
+  ['sessStudent','sdqStudent','phqaStudent','gad7Student','wemwbsStudent'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML='<option value="">— Select student —</option>'+opts;
+  });
+  const now=new Date();
+  const d=document.getElementById('sessDate');
+  const t=document.getElementById('sessTime');
+  if(d&&!d.value) d.value=now.toISOString().slice(0,10);
+  if(t&&!t.value) t.value=now.toTimeString().slice(0,5);
+}
+
+document.querySelectorAll('.check-item input').forEach(cb=>{
+  cb.addEventListener('change',()=>{cb.parentElement.classList.toggle('checked',cb.checked);});
+});
+
+function selectRisk(el){
+  document.querySelectorAll('.risk-opt').forEach(o=>o.className='risk-opt');
+  const map={None:'sel-none',Low:'sel-low',Medium:'sel-med',High:'sel-high'};
+  el.classList.add(map[el.dataset.risk]);
+  selectedRisk=el.dataset.risk;
+}
+
+function openNewSession(){nav('sessions',null);setTimeout(populateStudentSelects,80);}
+
+function saveSession(){
+  const stuId=parseInt(document.getElementById('sessStudent').value);
+  if(!stuId){showToast('⚠️ Please select a student');return;}
+  const issues=[...document.querySelectorAll('.check-item input:checked')].map(c=>c.value);
+  const sess={
+    id:Date.now(),studentId:stuId,
+    date:document.getElementById('sessDate').value,
+    time:document.getElementById('sessTime').value,
+    type:document.getElementById('sessType').value,
+    attend:document.getElementById('sessAttend').value,
+    issues,risk:selectedRisk,
+    notes:document.getElementById('sessNotes').value,
+    followup:document.getElementById('sessFollowup').value,
+    colour:students.find(s=>s.id===stuId)?.colour||'#1565C0',
+  };
+  sessions.push(sess);
+  const st=students.find(s=>s.id===stuId);
+  if(st){
+    const riskOrder={None:0,Low:1,Medium:2,High:3};
+    if((riskOrder[sess.risk]||0)>(riskOrder[st.risk]||0)) st.risk=sess.risk;
+  }
+  save();
+  renderRecentSessions();
+  document.getElementById('sessNotes').value='';
+  document.getElementById('sessFollowup').value='';
+  document.querySelectorAll('.check-item input:checked').forEach(c=>{c.checked=false;c.parentElement.classList.remove('checked');});
+  document.querySelectorAll('.risk-opt').forEach(o=>o.className='risk-opt');
+  selectedRisk='None';
+  showToast(`✅ Session saved for ${st?.first||''} ${st?.last||''}`);
+}
+
+function renderRecentSessions(){
+  const div=document.getElementById('recentSessions');
+  if(!div)return;
+  const recent=sessions.slice(-8).reverse();
+  div.innerHTML=recent.map(s=>{
+    const st=students.find(x=>x.id===s.studentId);
+    if(!st)return'';
+    return `<div class="session-item">
+      <div class="sess-avatar" style="background:${st.colour}">${st.first[0]}${st.last[0]}</div>
+      <div class="sess-info"><div class="sess-name">${st.first} ${st.last}</div><div class="sess-meta">${formatDate(s.date)} · ${s.type} · ${s.attend}</div></div>
+      <span class="risk-badge risk-${s.risk.toLowerCase().replace(' ','-')}">${s.risk}</span>
+    </div>`;
+  }).join('')||'<div style="color:var(--sub);font-size:13px;">No sessions recorded yet</div>';
+}
+
+// ══════════════════════════════════════════════
+//  CALENDAR
+// ══════════════════════════════════════════════
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function renderCalendar(){
+  document.getElementById('calMonthLabel').textContent=`${MONTHS[calMonth]} ${calYear}`;
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const start=firstDay===0?-6:1-firstDay;
+  const days=[];
+  for(let d=start;d<=35+start;d++) days.push(new Date(calYear,calMonth,d));
+  const today=new Date().toISOString().slice(0,10);
+  const sessionDates=new Set(sessions.map(s=>s.date));
+  const container=document.getElementById('calDays');
+  container.innerHTML=days.map(d=>{
+    const iso=d.toISOString().slice(0,10);
+    const isOther=d.getMonth()!==calMonth;
+    const isToday=iso===today;
+    const hasSess=sessionDates.has(iso);
+    const isSel=iso===selectedCalDate;
+    return `<div class="cal-day${isOther?' other-month':''}${isToday?' today':''}${hasSess?' has-session':''}${isSel&&!isToday?' selected':''}" onclick="selectCalDay('${iso}')">${d.getDate()}</div>`;
+  }).join('');
+}
+
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+
+function selectCalDay(iso){
+  selectedCalDate=iso;
+  renderCalendar();
+  const daySess=sessions.filter(s=>s.date===iso);
+  const titleEl=document.getElementById('calDayTitle');
+  const bodyEl=document.getElementById('calDaySessions');
+  titleEl.textContent=`${formatDate(iso)} (${daySess.length} session${daySess.length!==1?'s':''})`;
+  if(daySess.length===0){
+    bodyEl.innerHTML=`<div style="color:var(--sub);font-size:13px;text-align:center;padding:16px;">No sessions on this date<br><button class="btn btn-primary" style="margin-top:10px;" onclick="prefillSessionDate('${iso}')">+ Add Session</button></div>`;
+    return;
+  }
+  bodyEl.innerHTML=daySess.map(s=>{
+    const st=students.find(x=>x.id===s.studentId);
+    if(!st)return'';
+    const name=privacyMode?`Y${st.year} Student`:st.first+' '+st.last;
+    return `<div class="session-item">
+      <div class="sess-time">${s.time}</div>
+      <div class="sess-avatar" style="background:${st.colour}">${st.first[0]}${st.last[0]}</div>
+      <div class="sess-info"><div class="sess-name">${name}</div><div class="sess-meta">${s.type} · ${s.attend}</div></div>
+      <span class="risk-badge risk-${s.risk.toLowerCase().replace(' ','-')}">${s.risk}</span>
+    </div>`;
+  }).join('');
+}
+
+function prefillSessionDate(iso){nav('sessions',null);setTimeout(()=>{document.getElementById('sessDate').value=iso;},80);}
+
+function togglePrivacy(){
+  privacyMode=!privacyMode;
+  document.getElementById('privacyLabel').textContent=`Privacy Mode: ${privacyMode?'ON — names hidden':'OFF — click to hide names'}`;
+  document.getElementById('privacyToggle').style.background=privacyMode?'#FEF2F2':'#FEF9C3';
+  if(selectedCalDate) selectCalDay(selectedCalDate);
+}
+
+// ══════════════════════════════════════════════
+//  ASSESSMENTS
+// ══════════════════════════════════════════════
+function switchAssess(id,btn){
+  document.querySelectorAll('.assess-panel').forEach(p=>p.style.display='none');
+  document.getElementById('assess'+id.toUpperCase()).style.display='block';
+  document.querySelectorAll('#screen-assessments .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+const SDQ_Q=[
+  'Considerate of other people\'s feelings',
+  'Restless, overactive, cannot stay still for long',
+  'Often complains of headaches, stomach-aches or sickness',
+  'Shares readily with other children (e.g. books, games, food)',
+  'Often has temper tantrums or hot tempers',
+  'Rather solitary, tends to play alone',
+  'Generally obedient, usually does what adults request',
+  'Many worries, often seems worried',
+  'Helpful if someone is hurt, upset or feeling ill',
+  'Constantly fidgeting or squirming',
+];
+const PHQA_Q=[
+  'Little interest or pleasure in doing things',
+  'Feeling down, depressed, or hopeless',
+  'Trouble falling or staying asleep, or sleeping too much',
+  'Feeling tired or having little energy',
+  'Poor appetite or overeating',
+  'Feeling bad about yourself – or that you are a failure',
+  'Trouble concentrating on things',
+  'Moving or speaking so slowly that other people have noticed',
+  'Thoughts that you would be better off dead or of hurting yourself',
+];
+const GAD7_Q=[
+  'Feeling nervous, anxious, or on edge',
+  'Not being able to stop or control worrying',
+  'Worrying too much about different things',
+  'Trouble relaxing',
+  'Being so restless that it is hard to sit still',
+  'Becoming easily annoyed or irritable',
+  'Feeling afraid as if something awful might happen',
+];
+const WEMWBS_Q=[
+  'I\'ve been feeling optimistic about the future',
+  'I\'ve been feeling useful',
+  'I\'ve been feeling relaxed',
+  'I\'ve been dealing with problems well',
+  'I\'ve been thinking clearly',
+  'I\'ve been feeling close to other people',
+  'I\'ve been able to make up my own mind about things',
+];
+
+function buildAssessOpts(qArr,containerId,opts,vals){
+  document.getElementById(containerId).innerHTML=qArr.map((q,i)=>`
+    <div class="assess-q">
+      <div class="assess-text">${i+1}. ${q}</div>
+      <div class="assess-opts">${opts.map((o,v)=>`<button class="assess-opt" data-q="${i}" data-v="${vals[v]}" onclick="pickAssess(this)">${o}</button>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderSDQ(){buildAssessOpts(SDQ_Q,'sdqQuestions',['Not True','Somewhat True','Certainly True'],[0,1,2]);}
+function renderPHQA(){buildAssessOpts(PHQA_Q,'phqaQuestions',['Not at all','Several days','More than half','Nearly every day'],[0,1,2,3]);}
+function renderGAD7(){buildAssessOpts(GAD7_Q,'gad7Questions',['Not at all','Several days','More than half','Nearly every day'],[0,1,2,3]);}
+function renderWEMWBS(){buildAssessOpts(WEMWBS_Q,'wemwbsQuestions',['None of the time','Rarely','Some of the time','Often','All of the time'],[1,2,3,4,5]);}
+
+function pickAssess(btn){
+  const q=btn.dataset.q;
+  btn.closest('.assess-opts').querySelectorAll('.assess-opt').forEach(b=>{if(b.dataset.q===q)b.classList.remove('selected');});
+  btn.classList.add('selected');
+}
+
+function calcScore(containerId){
+  const opts=[...document.querySelectorAll(`#${containerId} .assess-opt.selected`)];
+  const byQ={};
+  opts.forEach(o=>{byQ[o.dataset.q]=parseInt(o.dataset.v);});
+  const qs=document.querySelectorAll(`#${containerId} .assess-q`).length;
+  return Object.keys(byQ).length<qs?null:Object.values(byQ).reduce((a,b)=>a+b,0);
+}
+
+function calcSDQ(){
+  const score=calcScore('sdqQuestions');
+  if(score===null){showToast('⚠️ Please answer all questions');return;}
+  const el=document.getElementById('sdqScore');
+  el.style.display='block';
+  document.getElementById('sdqScoreVal').textContent=score;
+  document.getElementById('sdqScoreLabel').textContent=score<=15?'Normal range':score<=19?'Borderline':'Abnormal — consider referral';
+  el.style.background=score<=15?'#F0FDF4':score<=19?'#FFFBEB':'#FEF2F2';
+}
+function calcPHQA(){
+  const score=calcScore('phqaQuestions');
+  if(score===null){showToast('⚠️ Please answer all questions');return;}
+  const el=document.getElementById('phqaScore');el.style.display='block';
+  document.getElementById('phqaScoreVal').textContent=score;
+  el.style.background=score<=4?'#F0FDF4':score<=9?'#FFFBEB':score<=14?'#FFF7ED':'#FEF2F2';
+}
+function calcGAD7(){
+  const score=calcScore('gad7Questions');
+  if(score===null){showToast('⚠️ Please answer all questions');return;}
+  const el=document.getElementById('gad7Score');el.style.display='block';
+  document.getElementById('gad7ScoreVal').textContent=score;
+  el.style.background=score<=4?'#F0FDF4':score<=9?'#FFFBEB':score<=14?'#FFF7ED':'#FEF2F2';
+}
+function calcWEMWBS(){
+  const score=calcScore('wemwbsQuestions');
+  if(score===null){showToast('⚠️ Please answer all questions');return;}
+  const el=document.getElementById('wemwbsScore');el.style.display='block';
+  document.getElementById('wemwbsScoreVal').textContent=score;
+  el.style.background=score>=53?'#F0FDF4':score>=35?'#FFFBEB':'#FEF2F2';
+}
+
+function saveAssessment(type){showToast(`✅ ${type} assessment saved to student record`);}
+
+// ══════════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════════
+function renderReports(){
+  document.getElementById('rpTotal').textContent=sessions.length;
+  const unique=new Set(sessions.map(s=>s.studentId)).size;
+  document.getElementById('rpStudents').textContent=unique;
+  document.getElementById('rpAvg').textContent=unique?Math.round(sessions.length/unique):0;
+
+  const months={};
+  const mLabels=['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'];
+  mLabels.forEach(m=>months[m]=0);
+  sessions.forEach(s=>{const m=new Date(s.date);const lbl=m.toLocaleString('en-GB',{month:'short'});if(months[lbl]!==undefined)months[lbl]++;});
+  const maxM=Math.max(...Object.values(months),1);
+  document.getElementById('chartMonths').innerHTML=Object.entries(months).map(([l,v])=>`
+    <div class="chart-bar-row"><div class="chart-label">${l}</div>
+    <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round(v/maxM*100)}%;"></div></div>
+    <div class="chart-value">${v}</div></div>`).join('');
+
+  const issueCounts={};
+  sessions.forEach(s=>s.issues.forEach(i=>{issueCounts[i]=(issueCounts[i]||0)+1;}));
+  const topIssues=Object.entries(issueCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxI=topIssues[0]?.[1]||1;
+  document.getElementById('chartIssues').innerHTML=(topIssues.length?topIssues:[['No data',0]]).map(([l,v])=>`
+    <div class="chart-bar-row"><div class="chart-label">${l}</div>
+    <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round(v/maxI*100)}%;background:#7C3AED;"></div></div>
+    <div class="chart-value">${v}</div></div>`).join('');
+
+  const years={'7':0,'8':0,'9':0,'10':0,'11':0,'12':0,'13':0};
+  sessions.forEach(s=>{const st=students.find(x=>x.id===s.studentId);if(st&&years[st.year]!==undefined)years[st.year]++;});
+  const maxY=Math.max(...Object.values(years),1);
+  document.getElementById('chartYears').innerHTML=Object.entries(years).map(([y,v])=>`
+    <div class="chart-bar-row"><div class="chart-label">Year ${y}</div>
+    <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round(v/maxY*100)}%;background:#16A34A;"></div></div>
+    <div class="chart-value">${v}</div></div>`).join('');
+
+  const refs={};
+  students.forEach(s=>refs[s.referral]=(refs[s.referral]||0)+1);
+  const topRefs=Object.entries(refs).sort((a,b)=>b[1]-a[1]);
+  const maxR=topRefs[0]?.[1]||1;
+  document.getElementById('chartReferrals').innerHTML=(topRefs.length?topRefs:[['No data',0]]).map(([l,v])=>`
+    <div class="chart-bar-row"><div class="chart-label">${l}</div>
+    <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round(v/maxR*100)}%;background:#D97706;"></div></div>
+    <div class="chart-value">${v}</div></div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  DOCUMENTS
+// ══════════════════════════════════════════════
+const docTemplates={
+  referral:`CAMHS REFERRAL LETTER
+
+Date: ${new Date().toLocaleDateString('en-GB')}
+From: Ms S. Williams, School Counsellor
+School: Southwark Academy
+To: South London CAMHS
+
+Re: [STUDENT NAME], DOB: [DOB], Year [YEAR]
+
+Dear CAMHS Team,
+
+I am writing to refer the above-named young person to your service. [Student name] has been receiving counselling support at Southwark Academy since [DATE], presenting with [PRESENTING ISSUES].
+
+Despite ongoing support within school, it is felt that [Student name] would benefit from more specialist intervention at CAMHS level.
+
+Please do not hesitate to contact me if you require further information.
+
+Yours sincerely,
+
+Ms S. Williams BACP Accredited
+School Counsellor | Southwark Academy
+s.williams@southwarkacademy.org.uk`,
+
+  consent:`COUNSELLING CONSENT FORM
+Southwark Academy — School Counselling Service
+
+In accordance with UK GDPR and the Data Protection Act 2018
+
+Student Name: ___________________________
+Year Group: _______  Date of Birth: _______
+
+I / We consent to [student name] receiving counselling sessions with the School Counsellor.
+
+I / We understand that:
+• Sessions are confidential, with the exception of safeguarding concerns
+• Notes are stored securely and locally on the school's system
+• Data will be retained for 3 years in line with school policy
+• I / We may withdraw consent at any time
+
+Parent / Carer Signature: _________________ Date: _______
+Student Signature (if 16+): _______________ Date: _______`,
+
+  dsl:`SAFEGUARDING REFERRAL TO DSL
+
+Date: ${new Date().toLocaleDateString('en-GB')}
+Counsellor: Ms S. Williams
+DSL: Mr R. Okafor
+
+STUDENT DETAILS
+Name: _______________________
+DOB: ____________  Year: _____
+
+NATURE OF CONCERN
+☐ Physical abuse    ☐ Emotional abuse
+☐ Sexual abuse      ☐ Neglect
+☐ Self-harm         ☐ Risk to others
+☐ Radicalisation    ☐ Other: _________
+
+DETAILS OF CONCERN
+[Record factually what was disclosed or observed, using the young person's own words where possible]
+
+___________________________________
+
+ACTION TAKEN
+☐ Information shared with DSL
+☐ Parents/carers notified
+☐ MASH referral made
+☐ Police contacted (999 / 101)
+
+Signed: _____________________ Date: _______`,
+};
+
+function genDoc(type){
+  const titles={referral:'CAMHS Referral Letter',consent:'Counselling Consent Form',risk:'Risk Assessment',summary:'Session Summary',dsl:'DSL Referral Form',ehc:'EHC Plan Contribution',report:'Annual Report',genogram:'Genogram Template',contract:'Working Agreement'};
+  const preview=document.getElementById('docPreview');
+  preview.style.display='block';
+  document.getElementById('docPreviewTitle').textContent=titles[type]||type;
+  document.getElementById('docPreviewBody').textContent=docTemplates[type]||`[${titles[type]} template]\n\nThis document will be pre-filled with student data when a student is selected.\n\nClick Print to generate the formatted document.`;
+  preview.scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════
+function updateSettings(){
+  const school=document.getElementById('setSchool')?.value;
+  const user=document.getElementById('setCounsellor')?.value;
+  if(school) document.getElementById('sbSchool').textContent=school;
+  if(user){const parts=user.split(' ');document.getElementById('sbUser').textContent=user;document.querySelector('.sb-avatar').textContent=parts.filter(p=>p.match(/[A-Z]/)).map(p=>p[0]).join('').slice(0,2)||'SW';}
+}
+
+function exportData(){
+  const data={students,sessions,exported:new Date().toISOString()};
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2));
+  a.download=`wenote-uk-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('✅ Data exported — keep this file secure (UK GDPR)');
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function formatDate(iso){
+  if(!iso)return'—';
+  const [y,m,d]=iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
 
 // ══════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════
 window.addEventListener('load',()=>{
-  setWeather();
-  setDate();
-  renderNotes();
-  renderAlerts();
-  document.getElementById('statPosts').textContent=
-    notes.filter(n=>n.author==='Jane Davies').length||0;
-});
-
-// ══════════════════════════════════════════════
-//  DATE / WEATHER
-// ══════════════════════════════════════════════
-function setDate(){
-  const d=new Date();
-  const opts={weekday:'long',day:'numeric',month:'long',year:'numeric'};
-  document.getElementById('wxDate').textContent=d.toLocaleDateString('en-GB',opts);
-}
-
-const wxData=[
-  {icon:'☀️',temp:19,desc:'Sunny intervals',humidity:58,wind:12},
-  {icon:'🌦️',temp:14,desc:'Partly cloudy',humidity:72,wind:18},
-  {icon:'🌧️',temp:11,desc:'Light rain',humidity:85,wind:22},
-  {icon:'⛅',temp:16,desc:'Overcast',humidity:65,wind:15},
-  {icon:'🌤️',temp:17,desc:'Mostly sunny',humidity:60,wind:10},
-];
-function setWeather(){
-  const w=wxData[0|Math.random()*wxData.length];
-  document.getElementById('wxIcon').textContent=w.icon;
-  document.getElementById('wxTemp').textContent=w.temp;
-  document.getElementById('wxDesc').textContent=w.desc;
-  document.getElementById('wxDetail').textContent=`Humidity ${w.humidity}% · Wind ${w.wind} km/h`;
-}
-
-// ══════════════════════════════════════════════
-//  FILTER / RENDER
-// ══════════════════════════════════════════════
-function filterCat(btn,cat){
-  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  activeCat=cat;
-  renderNotes();
-}
-
-function renderNotes(){
-  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
-  let filtered=notes.filter(n=>{
-    if(activeCat!=='all'&&n.cat!==activeCat)return false;
-    if(q&&!n.title.toLowerCase().includes(q)&&!n.body.toLowerCase().includes(q))return false;
-    return true;
-  });
-  // Pinned first
-  filtered.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
-
-  const list=document.getElementById('notesList');
-  document.getElementById('notesCount').textContent=`${filtered.length} note${filtered.length!==1?'s':''}`;
-
-  if(filtered.length===0){
-    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No notes found</div><div class="empty-sub">Be the first to post in this category!</div></div>`;
-    return;
-  }
-
-  list.innerHTML=filtered.map(n=>{
-    const c=CATS[n.cat];
-    return `<div class="note-card${n.pinned?' pinned':''}" onclick="openNote(${n.id})">
-      <div class="note-top">
-        <div class="cat-badge ${c.bg}">${c.icon}</div>
-        <div class="note-meta">
-          <div class="note-cat-label ${c.cc}">${c.label}</div>
-          <div class="note-time">${n.time}${n.pinned?' · 📌 Pinned':''}</div>
-        </div>
-      </div>
-      <div class="note-title">${n.title}</div>
-      <div class="note-body">${n.body}</div>
-      <div class="note-footer">
-        <div class="note-author">
-          <div class="author-avatar" style="background:${n.avatarBg}">${n.avatar}</div>
-          <span class="author-name">${n.author}</span>
-        </div>
-        <div class="note-actions">
-          <button class="action-btn${n.liked?' liked':''}" onclick="toggleLike(event,${n.id})">
-            <span>${n.liked?'❤️':'🤍'}</span>${n.likes}
-          </button>
-          <button class="action-btn" onclick="event.stopPropagation()">
-            <span>💬</span>${n.comments}
-          </button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════════
-//  LIKES
-// ══════════════════════════════════════════════
-function toggleLike(e,id){
-  e.stopPropagation();
-  const n=notes.find(x=>x.id===id);
-  if(!n)return;
-  n.liked=!n.liked;
-  n.likes+=n.liked?1:-1;
-  renderNotes();
-  if(n.liked)showToast('❤️ You liked this note');
-}
-
-// ══════════════════════════════════════════════
-//  NOTE MODAL
-// ══════════════════════════════════════════════
-function openNote(id){
-  const n=notes.find(x=>x.id===id);
-  if(!n)return;
-  openNoteId=id;
-  const c=CATS[n.cat];
-  document.getElementById('modalContent').innerHTML=`
-    <div class="modal-cat-badge ${c.bg}">${c.icon}</div>
-    <div class="modal-cat-label ${c.cc}">${c.label}</div>
-    <div class="modal-title">${n.title}</div>
-    <div class="modal-body">${n.body}</div>
-    <div class="modal-meta-row">
-      <div class="meta-chip">🕐 ${n.time}</div>
-      <div class="meta-chip">✍️ ${n.author}</div>
-      <div class="meta-chip">💬 ${n.comments} comments</div>
-      ${n.pinned?'<div class="meta-chip">📌 Pinned</div>':''}
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-like" onclick="toggleLike(event,${n.id});updateModalLike(${n.id})">
-        ${n.liked?'❤️':'🤍'} ${n.likes} Likes
-      </button>
-      <button class="modal-btn modal-btn-share" onclick="shareNote(${n.id})">📤 Share</button>
-    </div>
-  `;
-  document.getElementById('noteModal').classList.add('open');
-}
-
-function updateModalLike(id){
-  const n=notes.find(x=>x.id===id);
-  if(!n)return;
-  const btn=document.querySelector('.modal-btn-like');
-  if(btn)btn.innerHTML=`${n.liked?'❤️':'🤍'} ${n.likes} Likes`;
-}
-
-function closeNoteModal(e){
-  if(!e||e.target===document.getElementById('noteModal'))
-    document.getElementById('noteModal').classList.remove('open');
-}
-
-function shareNote(id){
-  const n=notes.find(x=>x.id===id);
-  if(!n)return;
-  if(navigator.share){
-    navigator.share({title:n.title,text:n.body,url:window.location.href});
-  } else {
-    navigator.clipboard?.writeText(`${n.title}\n\n${n.body}\n\n— WeNote UK`);
-    showToast('📋 Copied to clipboard');
-  }
-}
-
-// ══════════════════════════════════════════════
-//  COMPOSE
-// ══════════════════════════════════════════════
-function openCompose(){
-  document.getElementById('composeModal').classList.add('open');
-  document.getElementById('composeTitle').value='';
-  document.getElementById('composeBody').value='';
-  document.getElementById('composeName').value='';
-  document.querySelectorAll('.cat-pick-btn').forEach(b=>b.classList.remove('selected'));
-  document.querySelector('.cat-pick-btn[data-c="announce"]').classList.add('selected');
-  selectedCat='announce';
-}
-
-function closeCompose(e){
-  if(!e||e.target===document.getElementById('composeModal'))
-    document.getElementById('composeModal').classList.remove('open');
-}
-
-function pickCat(btn){
-  document.querySelectorAll('.cat-pick-btn').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedCat=btn.dataset.c;
-}
-
-function submitNote(){
-  const title=document.getElementById('composeTitle').value.trim();
-  const body=document.getElementById('composeBody').value.trim();
-  const name=document.getElementById('composeName').value.trim()||'Anonymous Neighbour';
-  if(!title){showToast('⚠️ Please add a title');return;}
-  if(!body){showToast('⚠️ Please add a message');return;}
-
   const now=new Date();
-  const timeStr=`Today, ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-  const avatarEmojis={announce:'📣',event:'🎉',lost:'🔍',help:'🙏',sale:'🛒',alert:'⚠️'};
-  const avatarBgs={announce:'#003399',event:'#15803D',lost:'#A16207',help:'#C2410C',sale:'#7E22CE',alert:'#BE123C'};
-
-  const newNote={
-    id:Date.now(),cat:selectedCat,pinned:false,
-    title,body,author:name,
-    avatar:avatarEmojis[selectedCat],avatarBg:avatarBgs[selectedCat],
-    time:timeStr,likes:0,liked:false,comments:0,
-  };
-  notes.unshift(newNote);
-  document.getElementById('composeModal').classList.remove('open');
-  activeCat='all';
-  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.cat-tab[data-cat="all"]').classList.add('active');
-  renderNotes();
-  showToast('✅ Your note has been posted!');
-}
-
-// ══════════════════════════════════════════════
-//  ALERTS
-// ══════════════════════════════════════════════
-const alertData=[
-  {read:false,title:'New note in your area','body':'📣 Council notice about bin collections','time':'2 hours ago'},
-  {read:false,title:'Someone liked your post','body':'❤️ 3 neighbours liked your message','time':'5 hours ago'},
-  {read:true, title:'Weekly Summary','body':'📊 14 new notes in SE1 this week','time':'Yesterday'},
-  {read:true, title:'New event nearby','body':'🎉 Street Party this Saturday — 100m away','time':'2 days ago'},
-  {read:true, title:'Lost pet alert','body':'🐱 Lost cat reported on your street','time':'3 days ago'},
-];
-
-function renderAlerts(){
-  document.getElementById('alertsList').innerHTML=alertData.map(a=>`
-    <div class="alert-item" onclick="this.querySelector('.alert-dot').classList.add('read')">
-      <div class="alert-dot${a.read?' read':''}"></div>
-      <div class="alert-content">
-        <h4>${a.title}</h4>
-        <p>${a.body}</p>
-        <div class="alert-time">${a.time}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ══════════════════════════════════════════════
-//  NAV
-// ══════════════════════════════════════════════
-function switchTab(tab){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={feed:0,alerts:1,map:2,profile:3};
-  document.querySelectorAll('.nav-btn')[map[tab]]?.classList.add('active');
-  document.getElementById('fab').style.display=(tab==='feed')?'flex':'none';
-}
-
-// ══════════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════════
-let toastTimer=null;
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
-}
-
-// ══════════════════════════════════════════════
-//  PREVENT SCROLL BOUNCE
-// ══════════════════════════════════════════════
-document.addEventListener('touchmove',e=>{if(e.scale&&e.scale!==1)e.preventDefault();},{passive:false});
+  document.getElementById('tbDate').textContent=now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+  renderDashboard();
+  populateStudentSelects();
+});
 </script>
 </body>
 </html>
